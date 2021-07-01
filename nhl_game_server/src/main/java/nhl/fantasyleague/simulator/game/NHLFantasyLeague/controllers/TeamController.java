@@ -23,6 +23,6 @@ public class TeamController {
 
     @GetMapping(value = "/teams/{id}")
     public ResponseEntity getTeam(@PathVariable Long id){
-        return teamService.getTeam(id)
+        return teamService.getTeam(id);
     }
 }

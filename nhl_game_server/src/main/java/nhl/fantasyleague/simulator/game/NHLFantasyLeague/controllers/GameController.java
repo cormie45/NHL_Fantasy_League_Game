@@ -25,4 +25,9 @@ public class GameController {
     public ResponseEntity getGame(@PathVariable Long id){
         return gameService.getGame(id);
     }
+
+    @GetMapping(value = "/games/create")
+    public ResponseEntity<List<Game>> createGames(){
+        return gameService.createGames();
+    }
 }
