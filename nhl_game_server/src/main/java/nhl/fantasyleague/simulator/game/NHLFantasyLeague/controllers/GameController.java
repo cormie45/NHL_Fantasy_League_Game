@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -30,4 +31,75 @@ public class GameController {
     public ResponseEntity<List<Game>> createGames(){
         return gameService.createGames();
     }
+
+    @GetMapping(value = "/games/week1")
+    public ResponseEntity<List<Game>> playWeek1(){
+        return gameService.playWeek1();
+    }
+
+    @GetMapping(value = "/games/week2")
+    public ResponseEntity<List<Game>> playWeek2(){
+        return gameService.playWeek2();
+    }
+
+//    @GetMapping(value = "/games/week3")
+//    public ResponseEntity<List<Game>> playWeek3(){
+//        return gameService.playWeek3();
+//    }
+//
+//    @GetMapping(value = "/games/week1")
+//    public ResponseEntity<List<Game>> playWeek1(){
+//        return gameService.playWeek1();
+//    }
+//
+//    @GetMapping(value = "/games/week1")
+//    public ResponseEntity<List<Game>> playWeek1(){
+//        return gameService.playWeek1();
+//    }
+//
+//    @GetMapping(value = "/games/week1")
+//    public ResponseEntity<List<Game>> playWeek1(){
+//        return gameService.playWeek1();
+//    }
+//
+//    @GetMapping(value = "/games/week1")
+//    public ResponseEntity<List<Game>> playWeek1(){
+//        return gameService.playWeek1();
+//    }
+//
+//    @GetMapping(value = "/games/week1")
+//    public ResponseEntity<List<Game>> playWeek1(){
+//        return gameService.playWeek1();
+//    }
+//
+//    @GetMapping(value = "/games/week1")
+//    public ResponseEntity<List<Game>> playWeek1(){
+//        return gameService.playWeek1();
+//    }
+//
+//    @GetMapping(value = "/games/week1")
+//    public ResponseEntity<List<Game>> playWeek1(){
+//        return gameService.playWeek1();
+//    }
+//
+//    @GetMapping(value = "/games/week1")
+//    public ResponseEntity<List<Game>> playWeek1(){
+//        return gameService.playWeek1();
+//    }
+//
+//    @GetMapping(value = "/games/week1")
+//    public ResponseEntity<List<Game>> playWeek1(){
+//        return gameService.playWeek1();
+//    }
+//
+//    @GetMapping(value = "/games/week1")
+//    public ResponseEntity<List<Game>> playWeek1(){
+//        return gameService.playWeek1();
+//    }
+//
+//    @GetMapping(value = "/games/week1")
+//    public ResponseEntity<List<Game>> playWeek1(){
+//        return gameService.playWeek1();
+//    }
+
 }

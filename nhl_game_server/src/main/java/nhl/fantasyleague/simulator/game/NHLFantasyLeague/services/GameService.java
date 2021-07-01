@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.IntStream;
 
 @Service
 public class GameService {
@@ -32,28 +33,46 @@ public class GameService {
         ArrayList<Team> teams = (ArrayList<Team>) teamRepository.findAll();
         Collections.shuffle(teams, new Random());
         int size = teams.size();
-        int sizeHalf = Math.floorDiv(size, 2);
         ArrayList<Game> homeGames = new ArrayList<>();
         ArrayList<Game> awayGames = new ArrayList<>();
         ArrayList<Game> allGames = new ArrayList<>();
-        int gameId = 1;
-        for (int i = 1; i < size - 1; i++){
-            for(int n = 0; n < sizeHalf -1; n++){
-                Game hGame = new Game(teams.get(n), teams.get(size - 1 - i));
-                hGame
+        IntStream.range(1, size).forEach(n -> {
+            IntStream.range(0, size/2).forEach(i ->{
+                Game hGame = new Game(teams.get(i), teams.get(size - 1 - i));
                 homeGames.add(hGame);
 //                System.out.println(homeGames);
-                Game aGame = new Game(teams.get(size - 1 - i), teams.get(n));
+                Game aGame = new Game(teams.get(size - 1 - i), teams.get(i));
                 awayGames.add(aGame);
 //                System.out.println(awayGames);
-            }
+            });
             teams.add(1, teams.remove(teams.size() - 1));
-            allGames.addAll(Math.floorDiv(allGames.size(), 2), homeGames);
+            allGames.addAll(allGames.size()/2, homeGames);
             allGames.addAll(awayGames);
+            allGames.forEach(g -> gameRepository.save(g));
             homeGames.clear();
             awayGames.clear();
-        }
+        });
+
         return new ResponseEntity(allGames, HttpStatus.OK);
     }
 
+    public ResponseEntity<List<Game>> playWeek1() {
+        ArrayList<Game> allGames = (ArrayList<Game>) gameRepository.findAll();
+        ArrayList<Game> week1Games = new ArrayList<>();
+        IntStream.range(0, 12).forEach(i ->{
+            Game currentGame = allGames.get(i);
+            week1Games.add(currentGame);
+        });
+        return new ResponseEntity(week1Games, HttpStatus.OK);
+    }
+
+    public ResponseEntity<List<Game>> playWeek2() {
+        ArrayList<Game> allGames = (ArrayList<Game>) gameRepository.findAll();
+        ArrayList<Game> week2Games = new ArrayList<>();
+        IntStream.range(12, 24).forEach(i ->{
+            Game currentGame = allGames.get(i);
+            week2Games.add(currentGame);
+        });
+        return new ResponseEntity(week2Games, HttpStatus.OK);
+    }
 }

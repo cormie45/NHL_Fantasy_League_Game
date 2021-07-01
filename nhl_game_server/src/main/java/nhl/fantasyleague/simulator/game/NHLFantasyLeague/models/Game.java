@@ -14,12 +14,12 @@ public class Game {
     private Long id;
 
     @ManyToOne
-    @JsonIgnoreProperties({"games"})
+    @JsonIgnoreProperties({"games", "players", "balance", "stadium", "city", "teamForm"})
     @JoinColumn(name = "home_team_id", nullable = false)
     private Team homeTeam;
 
     @ManyToOne
-    @JsonIgnoreProperties({"games"})
+    @JsonIgnoreProperties({"games", "players", "balance", "stadium", "city", "teamForm"})
     @JoinColumn(name = "away_team_id", nullable = false)
     private Team awayTeam;
 
