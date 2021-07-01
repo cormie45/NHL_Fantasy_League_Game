@@ -1,9 +1,8 @@
 package nhl.fantasyleague.simulator.game.NHLFantasyLeague.controllers;
 
 import nhl.fantasyleague.simulator.game.NHLFantasyLeague.models.Coach;
-import nhl.fantasyleague.simulator.game.NHLFantasyLeague.repositories.CoachRepository;
+import nhl.fantasyleague.simulator.game.NHLFantasyLeague.services.CoachService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,15 +14,15 @@ import java.util.List;
 public class CoachController {
 
     @Autowired
-    CoachRepository coachRepository;
+    CoachService coachService;
 
     @GetMapping(value = "/coaches")
     public ResponseEntity<List<Coach>> getAllCoaches(){
-        return new ResponseEntity<>(coachRepository.findAll(), HttpStatus.OK);
+        return coachService.getAllCoaches();
     }
 
     @GetMapping(value = "/coaches/{id}")
     public ResponseEntity getCoach(@PathVariable Long id){
-        return new ResponseEntity<>(coachRepository.findById(id), HttpStatus.OK);
+        return coachService.getCoach(id);
     }
 }

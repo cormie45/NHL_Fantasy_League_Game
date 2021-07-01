@@ -65,6 +65,14 @@ public class Team {
         this.name = name;
     }
 
+    public Long getBalance() {
+        return balance;
+    }
+
+    public void setBalance(Long balance) {
+        this.balance = balance;
+    }
+
     public String getStadium() {
         return stadium;
     }
