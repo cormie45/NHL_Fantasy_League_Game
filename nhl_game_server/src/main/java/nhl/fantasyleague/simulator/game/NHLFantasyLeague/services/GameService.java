@@ -1,8 +1,10 @@
 package nhl.fantasyleague.simulator.game.NHLFantasyLeague.services;
 
 import nhl.fantasyleague.simulator.game.NHLFantasyLeague.models.Game;
+import nhl.fantasyleague.simulator.game.NHLFantasyLeague.models.Player;
 import nhl.fantasyleague.simulator.game.NHLFantasyLeague.models.Team;
 import nhl.fantasyleague.simulator.game.NHLFantasyLeague.repositories.GameRepository;
+import nhl.fantasyleague.simulator.game.NHLFantasyLeague.repositories.PlayerRepository;
 import nhl.fantasyleague.simulator.game.NHLFantasyLeague.repositories.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,9 @@ public class GameService {
 
     @Autowired
     TeamRepository teamRepository;
+
+    @Autowired
+    PlayerRepository playerRepository;
 
     public ResponseEntity<List<Game>> getAllGames(){
         return new ResponseEntity<>(gameRepository.findAll(), HttpStatus.OK);
@@ -56,23 +61,53 @@ public class GameService {
         return new ResponseEntity(allGames, HttpStatus.OK);
     }
 
-    public ResponseEntity<List<Game>> playWeek1() {
-        ArrayList<Game> allGames = (ArrayList<Game>) gameRepository.findAll();
-        ArrayList<Game> week1Games = new ArrayList<>();
-        IntStream.range(0, 12).forEach(i ->{
-            Game currentGame = allGames.get(i);
-            week1Games.add(currentGame);
-        });
-        return new ResponseEntity(week1Games, HttpStatus.OK);
+    public ResponseEntity<Game> simulateGames(Long home, Long away) {
+
+        Team homeTeam = teamRepository.getById(home);
+        Team awayTeam = teamRepository.getById(away);
+
+        ArrayList<Player> homeTeamPlayers = (ArrayList<Player>) playerRepository.findByTeamId(home);
+        ArrayList<Player> awayTeamPlayers = (ArrayList<Player>) playerRepository.findByTeamId(away);
+
+        int homePlayerAtt = homeTeamPlayers.stream().filter(
+                player -> player.getPosition().equals("Center") || player.getPosition().equals("Left Wing") || player.getPosition().equals("Right Wing")).mapToInt(
+                        player -> player.getRating() * player.getPlayerForm()).sum();
+        int homeTeamAtt = Math.floorDiv(homePlayerAtt *= homeTeam.getTeamForm(), 10);
+
+        int homePlayerDef = homeTeamPlayers.stream().filter(
+                player -> player.getPosition().equals("Defence") || player.getPosition().equals("Goaltender")).mapToInt(
+                        player -> player.getRating() * player.getPlayerForm()).sum();
+        int homeTeamDef = Math.floorDiv(homePlayerDef *= homeTeam.getTeamForm(), 10);
+
+        int awayPlayerAtt = awayTeamPlayers.stream().filter(
+                player -> player.getPosition().equals("Center") || player.getPosition().equals("Left Wing") || player.getPosition().equals("Right Wing")).mapToInt(
+                        player -> player.getRating() * player.getPlayerForm()).sum();
+        int awayTeamAtt = Math.floorDiv(awayPlayerAtt *= awayTeam.getTeamForm(), 10);
+
+        int awayPlayerDef = awayTeamPlayers.stream().filter(
+                player -> player.getPosition().equals("Defence") || player.getPosition().equals("Goaltender")).mapToInt(
+                        player -> player.getRating() * player.getPlayerForm()).sum();
+        int awayTeamDef = Math.floorDiv(awayPlayerDef *= awayTeam.getTeamForm(), 10);
+
     }
 
-    public ResponseEntity<List<Game>> playWeek2() {
-        ArrayList<Game> allGames = (ArrayList<Game>) gameRepository.findAll();
-        ArrayList<Game> week2Games = new ArrayList<>();
-        IntStream.range(12, 24).forEach(i ->{
-            Game currentGame = allGames.get(i);
-            week2Games.add(currentGame);
-        });
-        return new ResponseEntity(week2Games, HttpStatus.OK);
-    }
+//    public ResponseEntity<List<Game>> playWeek1() {
+//        ArrayList<Game> allGames = (ArrayList<Game>) gameRepository.findAll();
+//        ArrayList<Game> week1Games = new ArrayList<>();
+//        IntStream.range(0, 12).forEach(i ->{
+//            Game currentGame = allGames.get(i);
+//            week1Games.add(currentGame);
+//        });
+//        return new ResponseEntity(week1Games, HttpStatus.OK);
+//    }
+//
+//    public ResponseEntity<List<Game>> playWeek2() {
+//        ArrayList<Game> allGames = (ArrayList<Game>) gameRepository.findAll();
+//        ArrayList<Game> week2Games = new ArrayList<>();
+//        IntStream.range(12, 24).forEach(i ->{
+//            Game currentGame = allGames.get(i);
+//            week2Games.add(currentGame);
+//        });
+//        return new ResponseEntity(week2Games, HttpStatus.OK);
+//    }
 }

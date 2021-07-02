@@ -32,74 +32,20 @@ public class GameController {
         return gameService.createGames();
     }
 
-    @GetMapping(value = "/games/week1")
-    public ResponseEntity<List<Game>> playWeek1(){
-        return gameService.playWeek1();
+    @GetMapping(value = "/games/simulate")
+    public ResponseEntity<Game> simulateGame(@RequestParam(name = "home", required = true)Long home,
+                                                   @RequestParam(name = "away", required = true)Long away){
+        return gameService.simulateGames(home, away);
     }
 
-    @GetMapping(value = "/games/week2")
-    public ResponseEntity<List<Game>> playWeek2(){
-        return gameService.playWeek2();
-    }
-
-//    @GetMapping(value = "/games/week3")
-//    public ResponseEntity<List<Game>> playWeek3(){
-//        return gameService.playWeek3();
-//    }
-//
 //    @GetMapping(value = "/games/week1")
 //    public ResponseEntity<List<Game>> playWeek1(){
 //        return gameService.playWeek1();
 //    }
 //
-//    @GetMapping(value = "/games/week1")
-//    public ResponseEntity<List<Game>> playWeek1(){
-//        return gameService.playWeek1();
-//    }
-//
-//    @GetMapping(value = "/games/week1")
-//    public ResponseEntity<List<Game>> playWeek1(){
-//        return gameService.playWeek1();
-//    }
-//
-//    @GetMapping(value = "/games/week1")
-//    public ResponseEntity<List<Game>> playWeek1(){
-//        return gameService.playWeek1();
-//    }
-//
-//    @GetMapping(value = "/games/week1")
-//    public ResponseEntity<List<Game>> playWeek1(){
-//        return gameService.playWeek1();
-//    }
-//
-//    @GetMapping(value = "/games/week1")
-//    public ResponseEntity<List<Game>> playWeek1(){
-//        return gameService.playWeek1();
-//    }
-//
-//    @GetMapping(value = "/games/week1")
-//    public ResponseEntity<List<Game>> playWeek1(){
-//        return gameService.playWeek1();
-//    }
-//
-//    @GetMapping(value = "/games/week1")
-//    public ResponseEntity<List<Game>> playWeek1(){
-//        return gameService.playWeek1();
-//    }
-//
-//    @GetMapping(value = "/games/week1")
-//    public ResponseEntity<List<Game>> playWeek1(){
-//        return gameService.playWeek1();
-//    }
-//
-//    @GetMapping(value = "/games/week1")
-//    public ResponseEntity<List<Game>> playWeek1(){
-//        return gameService.playWeek1();
-//    }
-//
-//    @GetMapping(value = "/games/week1")
-//    public ResponseEntity<List<Game>> playWeek1(){
-//        return gameService.playWeek1();
+//    @GetMapping(value = "/games/week2")
+//    public ResponseEntity<List<Game>> playWeek2(){
+//        return gameService.playWeek2();
 //    }
 
 }

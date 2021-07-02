@@ -22,4 +22,8 @@ public class PlayerService {
     public ResponseEntity getPlayer(Long id){
         return new ResponseEntity<>(playerRepository.findById(id), HttpStatus.OK);
     }
+
+    public ResponseEntity<List<Player>> findByTeamId(Long team) {
+        return new ResponseEntity<>(playerRepository.findByTeamId(team), HttpStatus.OK);
+    }
 }
