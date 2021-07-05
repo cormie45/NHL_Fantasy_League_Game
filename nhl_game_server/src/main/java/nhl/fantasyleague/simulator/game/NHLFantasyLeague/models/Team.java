@@ -27,6 +27,18 @@ public class Team {
     @Column(name ="city")
     private String city;
 
+    @Column(name = "games_played")
+    private int gamesPlayed;
+
+    @Column(name = "points")
+    private int points;
+
+    @Column(name = "goals_for")
+    private int goalsFor;
+
+    @Column(name = "goals_against")
+    private int goalsAgainst;
+
     @Column(name = "team_form")
     private int teamForm;
 
@@ -42,6 +54,10 @@ public class Team {
         this.balance = balance;
         this.stadium = stadium;
         this.city = city;
+        this.gamesPlayed = 0;
+        this.points = 0;
+        this.goalsFor = 0;
+        this.goalsAgainst = 0;
         this.teamForm = 3;
         this.players = new ArrayList<>();
     }
@@ -89,6 +105,38 @@ public class Team {
         this.city = city;
     }
 
+    public int getGamesPlayed() {
+        return gamesPlayed;
+    }
+
+    public void setGamesPlayed(int gamesPlayed) {
+        this.gamesPlayed = gamesPlayed;
+    }
+
+    public int getPoints() {
+        return points;
+    }
+
+    public void setPoints(int points) {
+        this.points = points;
+    }
+
+    public int getGoalsFor() {
+        return goalsFor;
+    }
+
+    public void setGoalsFor(int goalsFor) {
+        this.goalsFor = goalsFor;
+    }
+
+    public int getGoalsAgainst() {
+        return goalsAgainst;
+    }
+
+    public void setGoalsAgainst(int goalsAgainst) {
+        this.goalsAgainst = goalsAgainst;
+    }
+
     public int getTeamForm() {
         return teamForm;
     }
@@ -103,5 +151,13 @@ public class Team {
 
     public void setPlayers(List<Player> players) {
         this.players = players;
+    }
+
+    public Coach getCoach() {
+        return coach;
+    }
+
+    public void setCoach(Coach coach) {
+        this.coach = coach;
     }
 }

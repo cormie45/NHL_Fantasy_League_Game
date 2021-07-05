@@ -61,13 +61,14 @@ public class GameService {
         return new ResponseEntity(allGames, HttpStatus.OK);
     }
 
-    public ResponseEntity<Game> simulateGames(Long home, Long away) {
+    public ResponseEntity<Game> simulateGames(Long id) {
 
-        Team homeTeam = teamRepository.getById(home);
-        Team awayTeam = teamRepository.getById(away);
+        Game game = gameRepository.getById(id);
+        Team homeTeam = game.getHomeTeam();
+        Team awayTeam = game.getAwayTeam();
 
-        ArrayList<Player> homeTeamPlayers = (ArrayList<Player>) playerRepository.findByTeamId(home);
-        ArrayList<Player> awayTeamPlayers = (ArrayList<Player>) playerRepository.findByTeamId(away);
+        ArrayList<Player> homeTeamPlayers = (ArrayList<Player>) playerRepository.findByTeamId(homeTeam.getId());
+        ArrayList<Player> awayTeamPlayers = (ArrayList<Player>) playerRepository.findByTeamId(awayTeam.getId());
 
         int homePlayerAtt = homeTeamPlayers.stream().filter(
                 player -> player.getPosition().equals("Center") || player.getPosition().equals("Left Wing") || player.getPosition().equals("Right Wing")).mapToInt(
@@ -88,6 +89,8 @@ public class GameService {
                 player -> player.getPosition().equals("Defence") || player.getPosition().equals("Goaltender")).mapToInt(
                         player -> player.getRating() * player.getPlayerForm()).sum();
         int awayTeamDef = Math.floorDiv(awayPlayerDef *= awayTeam.getTeamForm(), 10);
+
+
 
     }
 

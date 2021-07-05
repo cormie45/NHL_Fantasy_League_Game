@@ -33,9 +33,8 @@ public class GameController {
     }
 
     @GetMapping(value = "/games/simulate")
-    public ResponseEntity<Game> simulateGame(@RequestParam(name = "home", required = true)Long home,
-                                                   @RequestParam(name = "away", required = true)Long away){
-        return gameService.simulateGames(home, away);
+    public ResponseEntity<Game> simulateGame(@RequestParam(name = "gameID", required = true)Long id){
+        return gameService.simulateGames(id);
     }
 
 //    @GetMapping(value = "/games/week1")
