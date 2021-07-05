@@ -3,6 +3,8 @@ package nhl.fantasyleague.simulator.game.NHLFantasyLeague.models;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "players")
@@ -45,6 +47,10 @@ public class Player {
     @JoinColumn(name = "team_id", nullable = false)
     private Team team;
 
+    @JsonIgnoreProperties(value = "player")
+    @OneToMany(mappedBy = "player")
+    private List<Goal> goals;
+
     public Player(String firstName, String lastName, int age, String position, int line, int rating, int playerValue, Team team) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -56,6 +62,7 @@ public class Player {
         this.playerForm = 3;
         this.points = 0;
         this.team = team;
+        this.goals = new ArrayList<>();
     }
 
     public Player() {
@@ -125,6 +132,14 @@ public class Player {
         this.playerForm = playerForm;
     }
 
+    public int getPlayerValue() {
+        return playerValue;
+    }
+
+    public void setPlayerValue(int playerValue) {
+        this.playerValue = playerValue;
+    }
+
     public int getPoints() {
         return points;
     }
@@ -139,5 +154,13 @@ public class Player {
 
     public void setTeam(Team team) {
         this.team = team;
+    }
+
+    public List<Goal> getGoals() {
+        return goals;
+    }
+
+    public void setGoals(List<Goal> goals) {
+        this.goals = goals;
     }
 }

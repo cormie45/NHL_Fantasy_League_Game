@@ -1,9 +1,11 @@
 package nhl.fantasyleague.simulator.game.NHLFantasyLeague.services;
 
 import nhl.fantasyleague.simulator.game.NHLFantasyLeague.models.Game;
+import nhl.fantasyleague.simulator.game.NHLFantasyLeague.models.Goal;
 import nhl.fantasyleague.simulator.game.NHLFantasyLeague.models.Player;
 import nhl.fantasyleague.simulator.game.NHLFantasyLeague.models.Team;
 import nhl.fantasyleague.simulator.game.NHLFantasyLeague.repositories.GameRepository;
+import nhl.fantasyleague.simulator.game.NHLFantasyLeague.repositories.GoalRepository;
 import nhl.fantasyleague.simulator.game.NHLFantasyLeague.repositories.PlayerRepository;
 import nhl.fantasyleague.simulator.game.NHLFantasyLeague.repositories.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,9 @@ public class GameService {
 
     @Autowired
     PlayerRepository playerRepository;
+
+    @Autowired
+    GoalRepository goalRepository;
 
     public ResponseEntity<List<Game>> getAllGames(){
         return new ResponseEntity<>(gameRepository.findAll(), HttpStatus.OK);
@@ -81,11 +86,18 @@ public class GameService {
         if (!game.hasPlayed1st()){
             int homeGoals = generateScore(homeTeamAtt, awayTeamDef);
             int awayGoals = generateScore(awayTeamAtt, homeTeamDef);
+            game.setPlayed1st(true);
             game.setHomeGoals1st(homeGoals);
+            if (game.getHomeGoals1st() > 0){
+                generateGoals(game, homeTeamPlayers);
+            }
             game.setTotalHome(game.getTotalHome() + homeGoals);
             homeTeam.setGoalsFor(homeTeam.getGoalsFor() + homeGoals);
             awayTeam.setGoalsAgainst(awayTeam.getGoalsAgainst() + homeGoals);
             game.setAwayGoals1st(awayGoals);
+            if(game.getHomeGoals1st() > 0){
+                generateGoals(game, awayTeamPlayers);
+            }
             game.setTotalAway(game.getTotalAway() + awayGoals);
             awayTeam.setGoalsFor(awayTeam.getGoalsFor() + awayGoals);
             homeTeam.setGoalsAgainst(homeTeam.getGoalsAgainst() + awayGoals);
@@ -100,7 +112,6 @@ public class GameService {
                 homeTeam.setPotentialPoints(homeTeam.getPoints() + 1);
                 awayTeam.setPotentialPoints(awayTeam.getPoints() + 1);
             }
-            game.setPlayed1st(true);
             gameRepository.save(game);
             return new ResponseEntity(game, HttpStatus.OK);
         }
@@ -108,11 +119,18 @@ public class GameService {
         if (game.hasPlayed1st() && !game.hasPlayed2nd()){
             int homeGoals = generateScore(homeTeamAtt, awayTeamDef);
             int awayGoals = generateScore(awayTeamAtt, homeTeamDef);
+            game.setPlayed2nd(true);
             game.setHomeGoals2nd(homeGoals);
+            if (game.getHomeGoals2nd() > 0){
+                generateGoals(game, homeTeamPlayers);
+            }
             game.setTotalHome(game.getTotalHome() + homeGoals);
             homeTeam.setGoalsFor(homeTeam.getGoalsFor() + homeGoals);
             awayTeam.setGoalsAgainst(awayTeam.getGoalsAgainst() + homeGoals);
             game.setAwayGoals2nd(awayGoals);
+            if (game.getAwayGoals2nd() > 0){
+                generateGoals(game, awayTeamPlayers);
+            }
             game.setTotalAway(game.getTotalAway() + awayGoals);
             awayTeam.setGoalsFor(awayTeam.getGoalsFor() + awayGoals);
             homeTeam.setGoalsAgainst(homeTeam.getGoalsAgainst() + awayGoals);
@@ -127,7 +145,6 @@ public class GameService {
                 homeTeam.setPotentialPoints(homeTeam.getPoints() + 1);
                 awayTeam.setPotentialPoints(awayTeam.getPoints() + 1);
             }
-            game.setPlayed2nd(true);
             gameRepository.save(game);
             return new ResponseEntity(game, HttpStatus.OK);
         }
@@ -135,14 +152,23 @@ public class GameService {
         if (game.hasPlayed1st() && game.hasPlayed2nd() && !game.hasPlayed3rd()){
             int homeGoals = generateScore(homeTeamAtt, awayTeamDef);
             int awayGoals = generateScore(awayTeamAtt, homeTeamDef);
+            game.setPlayed3rd(true);
             game.setHomeGoals3rd(homeGoals);
+            if (game.getHomeGoals3rd() > 0){
+                generateGoals(game, homeTeamPlayers);
+            }
             game.setTotalHome(game.getTotalHome() + homeGoals);
             homeTeam.setGoalsFor(homeTeam.getGoalsFor() + homeGoals);
             awayTeam.setGoalsAgainst(awayTeam.getGoalsAgainst() + homeGoals);
             game.setAwayGoals3rd(awayGoals);
+            if (game.getAwayGoals3rd() > 0){
+                generateGoals(game, awayTeamPlayers);
+            }
             game.setTotalAway(game.getTotalAway() + awayGoals);
             awayTeam.setGoalsFor(awayTeam.getGoalsFor() + awayGoals);
             homeTeam.setGoalsAgainst(homeTeam.getGoalsAgainst() + awayGoals);
+            homeTeam.setGamesPlayed(homeTeam.getGamesPlayed() + 1);
+            awayTeam.setGamesPlayed(awayTeam.getGamesPlayed() + 1);
 
             if (game.getTotalHome() > game.getTotalAway()){
                 homeTeam.setPoints(homeTeam.getPoints() + 2);
@@ -159,14 +185,24 @@ public class GameService {
                     homeTeamPlayers.forEach(this::lowerDefensivePlayerForm);
                 }
 
+                if (game.getTotalHome() > 3){
+                    homeTeamPlayers.forEach(this::raiseAttackingPlayerForm);
+                }
+
                 awayTeam.setPotentialPoints(0);
                 if (awayTeam.getTeamForm() > 1){
                     awayTeam.setTeamForm(awayTeam.getTeamForm() - 1);
                 }
-                if (game.getTotalHome() > 2){
+                if (game.getTotalHome() <= 3){
                     awayTeamPlayers.forEach(this::lowerDefensivePlayerForm);
                 }
-
+                if (game.getTotalHome() > 3){
+                    awayTeamPlayers.forEach(this::lowerDefensivePlayerForm);
+                    awayTeamPlayers.forEach(this::lowerDefensivePlayerForm);
+                }
+                if (game.getTotalAway() < 2){
+                    awayTeamPlayers.forEach(this::lowerAttackingPlayerForm);
+                }
             }
 
             if (game.getTotalHome() < game.getTotalAway()){
@@ -174,8 +210,16 @@ public class GameService {
                 if (homeTeam.getTeamForm() > 1){
                     homeTeam.setTeamForm(homeTeam.getTeamForm() - 1);
                 }
-                if (game.getTotalAway() > 2){
+                if (game.getTotalAway() <= 3){
                     homeTeamPlayers.forEach(this::lowerDefensivePlayerForm);
+                }
+                if (game.getTotalAway() > 3){
+                    homeTeamPlayers.forEach(this::lowerDefensivePlayerForm);
+                    homeTeamPlayers.forEach(this::lowerDefensivePlayerForm);
+                }
+
+                if(game.getTotalHome() < 2){
+                    homeTeamPlayers.forEach(this::lowerAttackingPlayerForm);
                 }
 
                 awayTeam.setPoints(awayTeam.getPoints() + 2);
@@ -190,6 +234,10 @@ public class GameService {
 
                 if (game.getTotalHome() > 3){
                     awayTeamPlayers.forEach(this::lowerDefensivePlayerForm);
+                }
+
+                if (game.getTotalAway() > 3){
+                    awayTeamPlayers.forEach(this::raiseAttackingPlayerForm);
                 }
             }
 
@@ -209,11 +257,140 @@ public class GameService {
                     allPlayers.forEach(this::lowerDefensivePlayerForm);
                 }
             }
-            game.setPlayed3rd(true);
             gameRepository.save(game);
             return new ResponseEntity(game, HttpStatus.OK);
         }
         return new ResponseEntity(game, HttpStatus.OK);
+    }
+
+    private void generateGoals(Game game, ArrayList<Player> players) {
+        int period = 0;
+        if (game.hasPlayed1st() && !game.hasPlayed2nd() && !game.hasPlayed3rd()){
+            period = 1;
+        }
+        if (game.hasPlayed1st() && game.hasPlayed2nd() && !game.hasPlayed3rd()){
+            period = 2;
+        }
+        if (game.hasPlayed1st() && game.hasPlayed2nd() && game.hasPlayed3rd()){
+            period = 3;
+        }
+
+        ArrayList<Player> possibleGoalscorer = new ArrayList<>();
+
+        players.forEach(player -> {
+            if (player.getLine() == 3){
+                if (player.getPlayerForm() > 4){
+                    if (player.getPosition().equals("Defence")) {
+                        possibleGoalscorer.add(player);
+                        possibleGoalscorer.add(player);
+                    }if (player.getPosition().equals("Center") || player.getPosition().equals("Left Wing") || player.getPosition().equals("Right Wing")){
+                        possibleGoalscorer.add(player);
+                        possibleGoalscorer.add(player);
+                        possibleGoalscorer.add(player);
+                        possibleGoalscorer.add(player);
+                    }
+
+                }
+                else if (player.getPlayerForm() >3){
+                    if (player.getPosition().equals("Defence")) {
+                        possibleGoalscorer.add(player);
+                    }if (player.getPosition().equals("Center") || player.getPosition().equals("Left Wing") || player.getPosition().equals("Right Wing")){
+                        possibleGoalscorer.add(player);
+                        possibleGoalscorer.add(player);
+                        possibleGoalscorer.add(player);
+                    }
+                }
+                else{
+                    if(!player.getPosition().equals("Goaltender")) {
+                        possibleGoalscorer.add(player);
+                    }
+                }
+            }
+
+            if (player.getLine() == 2){
+                if (player.getPlayerForm() > 4){
+                    if (player.getPosition().equals("Defence")) {
+                        possibleGoalscorer.add(player);
+                        possibleGoalscorer.add(player);
+                        possibleGoalscorer.add(player);
+                    }if (player.getPosition().equals("Center") || player.getPosition().equals("Left Wing") || player.getPosition().equals("Right Wing")){
+                        possibleGoalscorer.add(player);
+                        possibleGoalscorer.add(player);
+                        possibleGoalscorer.add(player);
+                        possibleGoalscorer.add(player);
+                        possibleGoalscorer.add(player);
+                        possibleGoalscorer.add(player);
+                    }
+
+                }
+                else if (player.getPlayerForm() >3){
+                    if (player.getPosition().equals("Defence")) {
+                        possibleGoalscorer.add(player);
+                        possibleGoalscorer.add(player);
+                    }if (player.getPosition().equals("Center") || player.getPosition().equals("Left Wing") || player.getPosition().equals("Right Wing")){
+                        possibleGoalscorer.add(player);
+                        possibleGoalscorer.add(player);
+                        possibleGoalscorer.add(player);
+                        possibleGoalscorer.add(player);
+                        possibleGoalscorer.add(player);
+                    }
+                }
+                else{
+                    if(!player.getPosition().equals("Goaltender")) {
+                        possibleGoalscorer.add(player);
+                        possibleGoalscorer.add(player);
+                    }
+                }
+            }
+
+            if (player.getLine() == 1){
+                if (player.getPlayerForm() > 4){
+                    if (player.getPosition().equals("Defence") || player.getPosition().equals("Goaltender")) {
+                        possibleGoalscorer.add(player);
+                        possibleGoalscorer.add(player);
+                        possibleGoalscorer.add(player);
+                        possibleGoalscorer.add(player);
+                    }else{
+                        possibleGoalscorer.add(player);
+                        possibleGoalscorer.add(player);
+                        possibleGoalscorer.add(player);
+                        possibleGoalscorer.add(player);
+                        possibleGoalscorer.add(player);
+                        possibleGoalscorer.add(player);
+                        possibleGoalscorer.add(player);
+                        possibleGoalscorer.add(player);
+                        possibleGoalscorer.add(player);
+                    }
+
+                }
+                else if (player.getPlayerForm() >3){
+                    if (player.getPosition().equals("Defence") || player.getPosition().equals("Goaltender")) {
+                        possibleGoalscorer.add(player);
+                        possibleGoalscorer.add(player);
+                        possibleGoalscorer.add(player);
+                    }else{
+                        possibleGoalscorer.add(player);
+                        possibleGoalscorer.add(player);
+                        possibleGoalscorer.add(player);
+                        possibleGoalscorer.add(player);
+                        possibleGoalscorer.add(player);
+                        possibleGoalscorer.add(player);
+                        possibleGoalscorer.add(player);
+                    }
+                }
+                else{
+                    if(!player.getPosition().equals("Goaltender")) {
+                        possibleGoalscorer.add(player);
+                        possibleGoalscorer.add(player);
+                        possibleGoalscorer.add(player);
+                    }
+                }
+            }
+        });
+        Random randScorer = new Random();
+        Player player = possibleGoalscorer.get(randScorer.nextInt(possibleGoalscorer.size()));
+        Goal goal = new Goal(player, game, period);
+        goalRepository.save(goal);
     }
 
     private int getTimeOnIce(Player player){
@@ -336,6 +513,14 @@ public class GameService {
         }
     }
 
+    private void raiseAttackingPlayerForm(Player player){
+        if (player.getPosition().equals("Center") || player.getPosition().equals("Left Wing") || player.getPosition().equals("Right Wing")){
+            if (player.getPlayerForm() < 5){
+                player.setPlayerForm(player.getPlayerForm() + 1);
+            }
+        }
+    }
+
     private void lowerDefensivePlayerForm(Player player){
         if (player.getPosition().equals("Defence") || player.getPosition().equals("Goaltender")){
             if (player.getPlayerForm() > 1){
@@ -344,9 +529,16 @@ public class GameService {
         }
     }
 
+    private void lowerAttackingPlayerForm(Player player){
+        if (player.getPosition().equals("Center") || player.getPosition().equals("Left Wing") || player.getPosition().equals("Right Wing")){
+            if (player.getPlayerForm() > 1){
+                player.setPlayerForm(player.getPlayerForm() - 1);
+            }
+        }
+    }
+
     private void raiseDefensiveLineForm(ArrayList<Player> players){
             ArrayList<Integer> potentialLine = new ArrayList<>();
-            players.forEach(this::raiseDefensivePlayerForm);
             int min = 1;
             int max;
             Random randLine = new Random();
