@@ -143,20 +143,52 @@ public class GameService {
             game.setTotalAway(game.getTotalAway() + awayGoals);
             awayTeam.setGoalsFor(awayTeam.getGoalsFor() + awayGoals);
             homeTeam.setGoalsAgainst(homeTeam.getGoalsAgainst() + awayGoals);
+
             if (game.getTotalHome() > game.getTotalAway()){
-                homeTeam.setPotentialPoints(homeTeam.getPoints() + 2);
+                homeTeam.setPoints(homeTeam.getPoints() + 2);
+                homeTeam.setPotentialPoints(0);
+                if (homeTeam.getTeamForm()< 5){
+                    homeTeam.setTeamForm(homeTeam.getTeamForm() + 1);
+                }
+                if(game.getTotalAway() < 2){
+                    homeTeamPlayers.forEach(this::raiseDefensivePlayerForm);
+                }
+
+                if (game.getTotalAway() > 3){
+                    homeTeamPlayers.forEach(this::lowerDefensivePlayerForm);
+                }
+
+                awayTeam.setPotentialPoints(0);
+                if (awayTeam.getTeamForm() > 1){
+                    awayTeam.setTeamForm(awayTeam.getTeamForm() - 1);
+                }
+                if (game.getTotalHome() > 2){
+                    awayTeamPlayers.forEach(this::lowerDefensivePlayerForm);
+                }
+
             }
+
             if (game.getTotalHome() < game.getTotalAway()){
                 homeTeam.setPotentialPoints(0);
                 if (homeTeam.getTeamForm() > 1){
                     homeTeam.setTeamForm(homeTeam.getTeamForm() - 1);
                 }
+                if (game.getTotalAway() > 2){
+                    homeTeamPlayers.forEach(this::lowerDefensivePlayerForm);
+                }
+
                 awayTeam.setPoints(awayTeam.getPoints() + 2);
                 awayTeam.setPotentialPoints(0);
                 if (awayTeam.getTeamForm()< 5){
                     awayTeam.setTeamForm(awayTeam.getTeamForm() + 1);
                 }
+                if(game.getTotalHome() < 2){
+                    awayTeamPlayers.forEach(this::raiseDefensivePlayerForm);
+                }
 
+                if (game.getTotalHome() > 3){
+                    awayTeamPlayers.forEach(this::lowerDefensivePlayerForm);
+                }
             }
 
             if (game.getTotalHome() == game.getTotalAway()){
@@ -165,8 +197,9 @@ public class GameService {
                 awayTeam.setPoints(awayTeam.getPoints() + 1);
                 awayTeam.setPotentialPoints(0);
 
-                if (game.getTotalHome() < 2){
-                    allPlayers.forEach(this::raiseDefensivePlayerForm);
+                if (game.getTotalHome() < 2) {
+                    raiseDefensiveLineForm(homeTeamPlayers);
+                    raiseDefensiveLineForm(awayTeamPlayers);
                 }
 
                 if (game.getTotalHome() > 2){
@@ -308,25 +341,33 @@ public class GameService {
         }
     }
 
-
-
-//    public ResponseEntity<List<Game>> playWeek1() {
-//        ArrayList<Game> allGames = (ArrayList<Game>) gameRepository.findAll();
-//        ArrayList<Game> week1Games = new ArrayList<>();
-//        IntStream.range(0, 12).forEach(i ->{
-//            Game currentGame = allGames.get(i);
-//            week1Games.add(currentGame);
-//        });
-//        return new ResponseEntity(week1Games, HttpStatus.OK);
-//    }
-//
-//    public ResponseEntity<List<Game>> playWeek2() {
-//        ArrayList<Game> allGames = (ArrayList<Game>) gameRepository.findAll();
-//        ArrayList<Game> week2Games = new ArrayList<>();
-//        IntStream.range(12, 24).forEach(i ->{
-//            Game currentGame = allGames.get(i);
-//            week2Games.add(currentGame);
-//        });
-//        return new ResponseEntity(week2Games, HttpStatus.OK);
-//    }
+    private void raiseDefensiveLineForm(ArrayList<Player> players){
+            ArrayList<Integer> potentialLine = new ArrayList<>();
+            players.forEach(this::raiseDefensivePlayerForm);
+            int min = 1;
+            int max;
+            Random randLine = new Random();
+            for (int n= 1; n<3; n++){
+                if (n == 1){
+                    potentialLine.add(1);
+                }
+                if (n == 2){
+                    max = 2;
+                    int line = randLine.nextInt((max - min) +1) + min;
+                    potentialLine.add(line);
+                }
+                else{
+                    max = 3;
+                    int line = randLine.nextInt((max - min) +1) + min;
+                    potentialLine.add(line);
+                }
+            }
+            Random line = new Random();
+            potentialLine.add(1);
+            players.forEach(player -> {
+                if (player.getLine() == potentialLine.get(line.nextInt(potentialLine.size()))){
+                    raiseDefensivePlayerForm(player);
+                }
+            });
+    }
 }
