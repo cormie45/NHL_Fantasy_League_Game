@@ -33,6 +33,9 @@ public class Team {
     @Column(name = "points")
     private int points;
 
+    @Column(name = "potential_points")
+    private int potentialPoints;
+
     @Column(name = "goals_for")
     private int goalsFor;
 
@@ -56,6 +59,7 @@ public class Team {
         this.city = city;
         this.gamesPlayed = 0;
         this.points = 0;
+        this.potentialPoints = 0;
         this.goalsFor = 0;
         this.goalsAgainst = 0;
         this.teamForm = 3;
@@ -115,6 +119,14 @@ public class Team {
 
     public int getPoints() {
         return points;
+    }
+
+    public int getPotentialPoints() {
+        return potentialPoints;
+    }
+
+    public void setPotentialPoints(int potentialPoints) {
+        this.potentialPoints = potentialPoints;
     }
 
     public void setPoints(int points) {

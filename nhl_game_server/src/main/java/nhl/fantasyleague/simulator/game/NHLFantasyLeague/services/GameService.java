@@ -72,27 +72,95 @@ public class GameService {
 
         int homePlayerAtt = homeTeamPlayers.stream().filter(
                 player -> player.getPosition().equals("Center") || player.getPosition().equals("Left Wing") || player.getPosition().equals("Right Wing")).mapToInt(
-                        player -> player.getRating() * player.getPlayerForm()).sum();
-        int homeTeamAtt = Math.floorDiv(homePlayerAtt *= homeTeam.getTeamForm(), 10);
+                        player -> (player.getRating() * 2) * player.getPlayerForm() * player.getLine()).sum();
+        int homeTeamAtt = Math.floorDiv(homePlayerAtt * homeTeam.getTeamForm(), 10);
 
         int homePlayerDef = homeTeamPlayers.stream().filter(
                 player -> player.getPosition().equals("Defence") || player.getPosition().equals("Goaltender")).mapToInt(
-                        player -> player.getRating() * player.getPlayerForm()).sum();
-        int homeTeamDef = Math.floorDiv(homePlayerDef *= homeTeam.getTeamForm(), 10);
+                        player -> (player.getRating() * 2) * player.getPlayerForm() * player.getLine()).sum();
+        int homeTeamDef = Math.floorDiv(homePlayerDef * homeTeam.getTeamForm(), 10);
 
         int awayPlayerAtt = awayTeamPlayers.stream().filter(
                 player -> player.getPosition().equals("Center") || player.getPosition().equals("Left Wing") || player.getPosition().equals("Right Wing")).mapToInt(
-                        player -> player.getRating() * player.getPlayerForm()).sum();
-        int awayTeamAtt = Math.floorDiv(awayPlayerAtt *= awayTeam.getTeamForm(), 10);
+                        player -> (player.getRating() * 2) * player.getPlayerForm() * player.getLine()).sum();
+        int awayTeamAtt = Math.floorDiv(awayPlayerAtt * awayTeam.getTeamForm(), 10);
 
         int awayPlayerDef = awayTeamPlayers.stream().filter(
                 player -> player.getPosition().equals("Defence") || player.getPosition().equals("Goaltender")).mapToInt(
-                        player -> player.getRating() * player.getPlayerForm()).sum();
-        int awayTeamDef = Math.floorDiv(awayPlayerDef *= awayTeam.getTeamForm(), 10);
+                        player -> (player.getRating() * 2) * player.getPlayerForm() * player.getLine()).sum();
+        int awayTeamDef = Math.floorDiv(awayPlayerDef * awayTeam.getTeamForm(), 10);
 
-
+        if (!game.hasPlayed1st()){
+            game.setHomeGoals1st(generateScore(homeTeamAtt, awayTeamDef));
+            game.setAwayGoals1st(generateScore(awayTeamAtt, homeTeamDef));
+            game.setPlayed1st(true);
+        }
 
     }
+
+    private Integer generateScore(int Att, int Def) {
+
+        ArrayList<Integer> potentialScore = new ArrayList<>();
+        Random randGoal = new Random();
+        int max = 4;
+        int min = 0;
+
+        if (Att > Def){
+
+            int variance = Att - Def;
+            for (int n=1; n<variance; n++){
+
+                if (n > 3){
+                    min = 1;
+                }
+
+                if (n > 7){
+                    min = 2;
+                    max = 5;
+                }
+
+                if (n > 11){
+                    min = 3;
+                    max = 6;
+                }
+                int goal = randGoal.nextInt((max - min) +1) + min;
+                potentialScore.add(goal);
+            }
+        }
+        else if(Def > Att){
+
+            int variance = Def - Att;
+            for (int n=1; n<variance; n++){
+                if (n > 11){
+                    max = 1;
+                    int goal = randGoal.nextInt((max - min) +1) + min;
+                    potentialScore.add(goal);
+                }
+
+                else if (n > 7){
+                    max = 2;
+                    int goal = randGoal.nextInt((max - min) +1) + min;
+                    potentialScore.add(goal);
+                }
+
+                else if (n > 3){
+                    max = 3;
+                    int goal = randGoal.nextInt((max - min) +1) + min;
+                    potentialScore.add(goal);
+                }
+            }
+        }
+        else{
+            potentialScore.add(0);
+            potentialScore.add(0);
+            potentialScore.add(1);
+            potentialScore.add(2);
+        }
+        Random randScore = new Random();
+        return potentialScore.get(randScore.nextInt(potentialScore.size()));
+    }
+
+
 
 //    public ResponseEntity<List<Game>> playWeek1() {
 //        ArrayList<Game> allGames = (ArrayList<Game>) gameRepository.findAll();
