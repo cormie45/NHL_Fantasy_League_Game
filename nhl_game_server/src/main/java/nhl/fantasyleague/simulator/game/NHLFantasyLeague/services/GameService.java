@@ -69,26 +69,14 @@ public class GameService {
 
         ArrayList<Player> homeTeamPlayers = (ArrayList<Player>) playerRepository.findByTeamId(homeTeam.getId());
         ArrayList<Player> awayTeamPlayers = (ArrayList<Player>) playerRepository.findByTeamId(awayTeam.getId());
+        ArrayList<Player> allPlayers = new ArrayList<>();
+        allPlayers.addAll(homeTeamPlayers);
+        allPlayers.addAll(awayTeamPlayers);
 
-        int homePlayerAtt = homeTeamPlayers.stream().filter(
-                player -> player.getPosition().equals("Center") || player.getPosition().equals("Left Wing") || player.getPosition().equals("Right Wing")).mapToInt(
-                        player -> (player.getRating() * 2) * player.getPlayerForm() * getTimeOnIce(player)).sum();
-        int homeTeamAtt = Math.floorDiv(homePlayerAtt * homeTeam.getTeamForm(), 10);
-
-        int homePlayerDef = homeTeamPlayers.stream().filter(
-                player -> player.getPosition().equals("Defence") || player.getPosition().equals("Goaltender")).mapToInt(
-                        player -> (player.getRating() * 2) * player.getPlayerForm() * getTimeOnIce(player)).sum();
-        int homeTeamDef = Math.floorDiv(homePlayerDef * homeTeam.getTeamForm(), 10);
-
-        int awayPlayerAtt = awayTeamPlayers.stream().filter(
-                player -> player.getPosition().equals("Center") || player.getPosition().equals("Left Wing") || player.getPosition().equals("Right Wing")).mapToInt(
-                        player -> (player.getRating() * 2) * player.getPlayerForm() * getTimeOnIce(player)).sum();
-        int awayTeamAtt = Math.floorDiv(awayPlayerAtt * awayTeam.getTeamForm(), 10);
-
-        int awayPlayerDef = awayTeamPlayers.stream().filter(
-                player -> player.getPosition().equals("Defence") || player.getPosition().equals("Goaltender")).mapToInt(
-                        player -> (player.getRating() * 2) * player.getPlayerForm() * getTimeOnIce(player)).sum();
-        int awayTeamDef = Math.floorDiv(awayPlayerDef * awayTeam.getTeamForm(), 10);
+        int homeTeamAtt = Math.floorDiv(getPlayersAttackRating(homeTeamPlayers) * homeTeam.getTeamForm(), 10);
+        int homeTeamDef = Math.floorDiv(getPlayerDefenceRating(homeTeamPlayers) * homeTeam.getTeamForm(), 10);
+        int awayTeamAtt = Math.floorDiv(getPlayersAttackRating(awayTeamPlayers) * awayTeam.getTeamForm(), 10);
+        int awayTeamDef = Math.floorDiv(getPlayerDefenceRating(awayTeamPlayers) * awayTeam.getTeamForm(), 10);
 
         if (!game.hasPlayed1st()){
             int homeGoals = generateScore(homeTeamAtt, awayTeamDef);
@@ -159,12 +147,31 @@ public class GameService {
                 homeTeam.setPotentialPoints(homeTeam.getPoints() + 2);
             }
             if (game.getTotalHome() < game.getTotalAway()){
-                awayTeam.setPotentialPoints(awayTeam.getPoints() + 2);
+                homeTeam.setPotentialPoints(0);
+                if (homeTeam.getTeamForm() > 1){
+                    homeTeam.setTeamForm(homeTeam.getTeamForm() - 1);
+                }
+                awayTeam.setPoints(awayTeam.getPoints() + 2);
+                awayTeam.setPotentialPoints(0);
+                if (awayTeam.getTeamForm()< 5){
+                    awayTeam.setTeamForm(awayTeam.getTeamForm() + 1);
+                }
+
             }
 
             if (game.getTotalHome() == game.getTotalAway()){
-                homeTeam.setPotentialPoints(homeTeam.getPoints() + 1);
-                awayTeam.setPotentialPoints(awayTeam.getPoints() + 1);
+                homeTeam.setPoints(homeTeam.getPoints() + 1);
+                homeTeam.setPotentialPoints(0);
+                awayTeam.setPoints(awayTeam.getPoints() + 1);
+                awayTeam.setPotentialPoints(0);
+
+                if (game.getTotalHome() < 2){
+                    allPlayers.forEach(this::raiseDefensivePlayerForm);
+                }
+
+                if (game.getTotalHome() > 2){
+                    allPlayers.forEach(this::lowerDefensivePlayerForm);
+                }
             }
             game.setPlayed3rd(true);
             gameRepository.save(game);
@@ -271,6 +278,34 @@ public class GameService {
         Random randScore = new Random();
         potentialScore.add(0);
         return potentialScore.get(randScore.nextInt(potentialScore.size()));
+    }
+
+    private int getPlayersAttackRating(ArrayList<Player> players){
+        return players.stream().filter(
+                player -> player.getPosition().equals("Center") || player.getPosition().equals("Left Wing") || player.getPosition().equals("Right Wing")).mapToInt(
+                player -> (player.getRating() * 2) * player.getPlayerForm() * getTimeOnIce(player)).sum();
+    }
+
+    private int getPlayerDefenceRating(ArrayList<Player> players){
+        return players.stream().filter(
+                player -> player.getPosition().equals("Defence") || player.getPosition().equals("Goaltender")).mapToInt(
+                player -> (player.getRating() * 2) * player.getPlayerForm() * getTimeOnIce(player)).sum();
+    }
+
+    private void raiseDefensivePlayerForm(Player player){
+        if (player.getPosition().equals("Defence") || player.getPosition().equals("Goaltender")){
+            if (player.getPlayerForm() < 5){
+                player.setPlayerForm(player.getPlayerForm() + 1);
+            }
+        }
+    }
+
+    private void lowerDefensivePlayerForm(Player player){
+        if (player.getPosition().equals("Defence") || player.getPosition().equals("Goaltender")){
+            if (player.getPlayerForm() > 1){
+                player.setPlayerForm(player.getPlayerForm() - 1);
+            }
+        }
     }
 
 
