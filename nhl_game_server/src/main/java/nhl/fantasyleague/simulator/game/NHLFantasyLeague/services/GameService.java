@@ -199,9 +199,16 @@ public class GameService {
             int variance = Att - Def;
             for (int n=1; n<variance; n++){
 
-                if (n > 14){
+                if (n > 19){
                     min = 1;
                     max = 5;
+                    int goal = randGoal.nextInt((max - min) +1) + min;
+                    potentialScore.add(goal);
+                }
+
+                else if (n > 14){
+                    min = 0;
+                    max = 4;
                     int goal = randGoal.nextInt((max - min) +1) + min;
                     potentialScore.add(goal);
                 }
@@ -220,6 +227,7 @@ public class GameService {
 
                 else{
                     max = 1;
+                    potentialScore.add(0);
                     int goal = randGoal.nextInt((max - min) +1) + min;
                     potentialScore.add(goal);
                 }
@@ -232,12 +240,14 @@ public class GameService {
             for (int n=1; n<variance; n++){
                 if (n > 14){
                     max = 1;
+                    potentialScore.add(0);
                     int goal = randGoal.nextInt(1) + min;
                     potentialScore.add(goal);
                 }
 
                 else if (n > 9){
                     max = 2;
+                    potentialScore.add(0);
                     int goal = randGoal.nextInt((max - min) +1) + min;
                     potentialScore.add(goal);
                 }
@@ -256,12 +266,12 @@ public class GameService {
 
         if (Att == Def){
             potentialScore.add(0);
-            potentialScore.add(0);
             potentialScore.add(1);
             potentialScore.add(2);
         }
 
         Random randScore = new Random();
+        potentialScore.add(0);
         return potentialScore.get(randScore.nextInt(potentialScore.size()));
     }
 
