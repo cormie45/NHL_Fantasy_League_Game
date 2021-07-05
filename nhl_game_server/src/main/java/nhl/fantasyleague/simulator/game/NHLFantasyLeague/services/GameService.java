@@ -89,14 +89,14 @@ public class GameService {
             game.setPlayed1st(true);
             game.setHomeGoals1st(homeGoals);
             if (game.getHomeGoals1st() > 0){
-                generateGoals(game, homeTeamPlayers);
+                generateGoals(game, homeTeamPlayers, game.getHomeGoals1st());
             }
             game.setTotalHome(game.getTotalHome() + homeGoals);
             homeTeam.setGoalsFor(homeTeam.getGoalsFor() + homeGoals);
             awayTeam.setGoalsAgainst(awayTeam.getGoalsAgainst() + homeGoals);
             game.setAwayGoals1st(awayGoals);
             if(game.getHomeGoals1st() > 0){
-                generateGoals(game, awayTeamPlayers);
+                generateGoals(game, awayTeamPlayers, game.getAwayGoals1st());
             }
             game.setTotalAway(game.getTotalAway() + awayGoals);
             awayTeam.setGoalsFor(awayTeam.getGoalsFor() + awayGoals);
@@ -122,14 +122,14 @@ public class GameService {
             game.setPlayed2nd(true);
             game.setHomeGoals2nd(homeGoals);
             if (game.getHomeGoals2nd() > 0){
-                generateGoals(game, homeTeamPlayers);
+                generateGoals(game, homeTeamPlayers, game.getHomeGoals2nd());
             }
             game.setTotalHome(game.getTotalHome() + homeGoals);
             homeTeam.setGoalsFor(homeTeam.getGoalsFor() + homeGoals);
             awayTeam.setGoalsAgainst(awayTeam.getGoalsAgainst() + homeGoals);
             game.setAwayGoals2nd(awayGoals);
             if (game.getAwayGoals2nd() > 0){
-                generateGoals(game, awayTeamPlayers);
+                generateGoals(game, awayTeamPlayers, game.getAwayGoals2nd());
             }
             game.setTotalAway(game.getTotalAway() + awayGoals);
             awayTeam.setGoalsFor(awayTeam.getGoalsFor() + awayGoals);
@@ -155,14 +155,14 @@ public class GameService {
             game.setPlayed3rd(true);
             game.setHomeGoals3rd(homeGoals);
             if (game.getHomeGoals3rd() > 0){
-                generateGoals(game, homeTeamPlayers);
+                generateGoals(game, homeTeamPlayers, game.getHomeGoals3rd());
             }
             game.setTotalHome(game.getTotalHome() + homeGoals);
             homeTeam.setGoalsFor(homeTeam.getGoalsFor() + homeGoals);
             awayTeam.setGoalsAgainst(awayTeam.getGoalsAgainst() + homeGoals);
             game.setAwayGoals3rd(awayGoals);
             if (game.getAwayGoals3rd() > 0){
-                generateGoals(game, awayTeamPlayers);
+                generateGoals(game, awayTeamPlayers, game.getAwayGoals3rd());
             }
             game.setTotalAway(game.getTotalAway() + awayGoals);
             awayTeam.setGoalsFor(awayTeam.getGoalsFor() + awayGoals);
@@ -263,7 +263,7 @@ public class GameService {
         return new ResponseEntity(game, HttpStatus.OK);
     }
 
-    private void generateGoals(Game game, ArrayList<Player> players) {
+    private void generateGoals(Game game, ArrayList<Player> players, int goalsScored) {
         int period = 0;
         if (game.hasPlayed1st() && !game.hasPlayed2nd() && !game.hasPlayed3rd()){
             period = 1;
@@ -277,116 +277,117 @@ public class GameService {
 
         ArrayList<Player> possibleGoalscorer = new ArrayList<>();
 
-        players.forEach(player -> {
-            if (player.getLine() == 3){
-                if (player.getPlayerForm() > 4){
-                    if (player.getPosition().equals("Defence")) {
-                        possibleGoalscorer.add(player);
-                        possibleGoalscorer.add(player);
-                    }if (player.getPosition().equals("Center") || player.getPosition().equals("Left Wing") || player.getPosition().equals("Right Wing")){
-                        possibleGoalscorer.add(player);
-                        possibleGoalscorer.add(player);
-                        possibleGoalscorer.add(player);
-                        possibleGoalscorer.add(player);
-                    }
+        for (int g=1; g<goalsScored; g++) {
 
-                }
-                else if (player.getPlayerForm() >3){
-                    if (player.getPosition().equals("Defence")) {
-                        possibleGoalscorer.add(player);
-                    }if (player.getPosition().equals("Center") || player.getPosition().equals("Left Wing") || player.getPosition().equals("Right Wing")){
-                        possibleGoalscorer.add(player);
-                        possibleGoalscorer.add(player);
-                        possibleGoalscorer.add(player);
-                    }
-                }
-                else{
-                    if(!player.getPosition().equals("Goaltender")) {
-                        possibleGoalscorer.add(player);
-                    }
-                }
-            }
+            players.forEach(player -> {
+                if (player.getLine() == 3) {
+                    if (player.getPlayerForm() > 4) {
+                        if (player.getPosition().equals("Defence")) {
+                            possibleGoalscorer.add(player);
+                            possibleGoalscorer.add(player);
+                        }
+                        if (player.getPosition().equals("Center") || player.getPosition().equals("Left Wing") || player.getPosition().equals("Right Wing")) {
+                            possibleGoalscorer.add(player);
+                            possibleGoalscorer.add(player);
+                            possibleGoalscorer.add(player);
+                            possibleGoalscorer.add(player);
+                        }
 
-            if (player.getLine() == 2){
-                if (player.getPlayerForm() > 4){
-                    if (player.getPosition().equals("Defence")) {
-                        possibleGoalscorer.add(player);
-                        possibleGoalscorer.add(player);
-                        possibleGoalscorer.add(player);
-                    }if (player.getPosition().equals("Center") || player.getPosition().equals("Left Wing") || player.getPosition().equals("Right Wing")){
-                        possibleGoalscorer.add(player);
-                        possibleGoalscorer.add(player);
-                        possibleGoalscorer.add(player);
-                        possibleGoalscorer.add(player);
-                        possibleGoalscorer.add(player);
-                        possibleGoalscorer.add(player);
+                    } else if (player.getPlayerForm() > 3) {
+                        if (player.getPosition().equals("Defence")) {
+                            possibleGoalscorer.add(player);
+                        }
+                        if (player.getPosition().equals("Center") || player.getPosition().equals("Left Wing") || player.getPosition().equals("Right Wing")) {
+                            possibleGoalscorer.add(player);
+                            possibleGoalscorer.add(player);
+                            possibleGoalscorer.add(player);
+                        }
+                    } else {
+                        if (!player.getPosition().equals("Goaltender")) {
+                            possibleGoalscorer.add(player);
+                        }
                     }
+                }
 
-                }
-                else if (player.getPlayerForm() >3){
-                    if (player.getPosition().equals("Defence")) {
-                        possibleGoalscorer.add(player);
-                        possibleGoalscorer.add(player);
-                    }if (player.getPosition().equals("Center") || player.getPosition().equals("Left Wing") || player.getPosition().equals("Right Wing")){
-                        possibleGoalscorer.add(player);
-                        possibleGoalscorer.add(player);
-                        possibleGoalscorer.add(player);
-                        possibleGoalscorer.add(player);
-                        possibleGoalscorer.add(player);
-                    }
-                }
-                else{
-                    if(!player.getPosition().equals("Goaltender")) {
-                        possibleGoalscorer.add(player);
-                        possibleGoalscorer.add(player);
-                    }
-                }
-            }
+                else if (player.getLine() == 2) {
+                    if (player.getPlayerForm() > 4) {
+                        if (player.getPosition().equals("Defence")) {
+                            possibleGoalscorer.add(player);
+                            possibleGoalscorer.add(player);
+                            possibleGoalscorer.add(player);
+                        }
+                        if (player.getPosition().equals("Center") || player.getPosition().equals("Left Wing") || player.getPosition().equals("Right Wing")) {
+                            possibleGoalscorer.add(player);
+                            possibleGoalscorer.add(player);
+                            possibleGoalscorer.add(player);
+                            possibleGoalscorer.add(player);
+                            possibleGoalscorer.add(player);
+                            possibleGoalscorer.add(player);
+                        }
 
-            if (player.getLine() == 1){
-                if (player.getPlayerForm() > 4){
-                    if (player.getPosition().equals("Defence") || player.getPosition().equals("Goaltender")) {
-                        possibleGoalscorer.add(player);
-                        possibleGoalscorer.add(player);
-                        possibleGoalscorer.add(player);
-                        possibleGoalscorer.add(player);
-                    }else{
-                        possibleGoalscorer.add(player);
-                        possibleGoalscorer.add(player);
-                        possibleGoalscorer.add(player);
-                        possibleGoalscorer.add(player);
-                        possibleGoalscorer.add(player);
-                        possibleGoalscorer.add(player);
-                        possibleGoalscorer.add(player);
-                        possibleGoalscorer.add(player);
-                        possibleGoalscorer.add(player);
+                    } else if (player.getPlayerForm() > 3) {
+                        if (player.getPosition().equals("Defence")) {
+                            possibleGoalscorer.add(player);
+                            possibleGoalscorer.add(player);
+                        }
+                        if (player.getPosition().equals("Center") || player.getPosition().equals("Left Wing") || player.getPosition().equals("Right Wing")) {
+                            possibleGoalscorer.add(player);
+                            possibleGoalscorer.add(player);
+                            possibleGoalscorer.add(player);
+                            possibleGoalscorer.add(player);
+                            possibleGoalscorer.add(player);
+                        }
+                    } else {
+                        if (!player.getPosition().equals("Goaltender")) {
+                            possibleGoalscorer.add(player);
+                            possibleGoalscorer.add(player);
+                        }
                     }
+                }
 
-                }
-                else if (player.getPlayerForm() >3){
-                    if (player.getPosition().equals("Defence") || player.getPosition().equals("Goaltender")) {
-                        possibleGoalscorer.add(player);
-                        possibleGoalscorer.add(player);
-                        possibleGoalscorer.add(player);
-                    }else{
-                        possibleGoalscorer.add(player);
-                        possibleGoalscorer.add(player);
-                        possibleGoalscorer.add(player);
-                        possibleGoalscorer.add(player);
-                        possibleGoalscorer.add(player);
-                        possibleGoalscorer.add(player);
-                        possibleGoalscorer.add(player);
+                else if (player.getLine() == 1) {
+                    if (player.getPlayerForm() > 4) {
+                        if (player.getPosition().equals("Defence") || player.getPosition().equals("Goaltender")) {
+                            possibleGoalscorer.add(player);
+                            possibleGoalscorer.add(player);
+                            possibleGoalscorer.add(player);
+                            possibleGoalscorer.add(player);
+                        } else {
+                            possibleGoalscorer.add(player);
+                            possibleGoalscorer.add(player);
+                            possibleGoalscorer.add(player);
+                            possibleGoalscorer.add(player);
+                            possibleGoalscorer.add(player);
+                            possibleGoalscorer.add(player);
+                            possibleGoalscorer.add(player);
+                            possibleGoalscorer.add(player);
+                            possibleGoalscorer.add(player);
+                        }
+
+                    } else if (player.getPlayerForm() > 3) {
+                        if (player.getPosition().equals("Defence") || player.getPosition().equals("Goaltender")) {
+                            possibleGoalscorer.add(player);
+                            possibleGoalscorer.add(player);
+                            possibleGoalscorer.add(player);
+                        } else {
+                            possibleGoalscorer.add(player);
+                            possibleGoalscorer.add(player);
+                            possibleGoalscorer.add(player);
+                            possibleGoalscorer.add(player);
+                            possibleGoalscorer.add(player);
+                            possibleGoalscorer.add(player);
+                            possibleGoalscorer.add(player);
+                        }
+                    } else {
+                        if (!player.getPosition().equals("Goaltender")) {
+                            possibleGoalscorer.add(player);
+                            possibleGoalscorer.add(player);
+                            possibleGoalscorer.add(player);
+                        }
                     }
                 }
-                else{
-                    if(!player.getPosition().equals("Goaltender")) {
-                        possibleGoalscorer.add(player);
-                        possibleGoalscorer.add(player);
-                        possibleGoalscorer.add(player);
-                    }
-                }
-            }
-        });
+            });
+        }
         Random randScorer = new Random();
         Player player = possibleGoalscorer.get(randScorer.nextInt(possibleGoalscorer.size()));
         Goal goal = new Goal(player, game, period);
