@@ -199,27 +199,27 @@ public class GameService {
             int variance = Att - Def;
             for (int n=1; n<variance; n++){
 
-                if (n > 11){
-                    min = 3;
-                    max = 6;
-                    int goal = randGoal.nextInt((max - min) +1) + min;
-                    potentialScore.add(goal);
-                }
-
-                else if (n > 7){
-                    min = 2;
+                if (n > 14){
+                    min = 1;
                     max = 5;
                     int goal = randGoal.nextInt((max - min) +1) + min;
                     potentialScore.add(goal);
                 }
 
-                else if (n > 3){
-                    min = 1;
+                else if (n > 9){
+                    max = 3;
+                    int goal = randGoal.nextInt((max - min) +1) + min;
+                    potentialScore.add(goal);
+                }
+
+                else if (n > 4){
+                    max = 2;
                     int goal = randGoal.nextInt((max - min) +1) + min;
                     potentialScore.add(goal);
                 }
 
                 else{
+                    max = 1;
                     int goal = randGoal.nextInt((max - min) +1) + min;
                     potentialScore.add(goal);
                 }
@@ -230,19 +230,19 @@ public class GameService {
 
             int variance = Def - Att;
             for (int n=1; n<variance; n++){
-                if (n > 11){
+                if (n > 14){
                     max = 1;
-                    int goal = randGoal.nextInt((max - min) +1) + min;
+                    int goal = randGoal.nextInt(1) + min;
                     potentialScore.add(goal);
                 }
 
-                else if (n > 7){
+                else if (n > 9){
                     max = 2;
                     int goal = randGoal.nextInt((max - min) +1) + min;
                     potentialScore.add(goal);
                 }
 
-                else if (n > 3){
+                else if (n > 4){
                     max = 3;
                     int goal = randGoal.nextInt((max - min) +1) + min;
                     potentialScore.add(goal);
