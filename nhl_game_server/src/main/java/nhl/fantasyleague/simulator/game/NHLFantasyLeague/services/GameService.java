@@ -152,6 +152,7 @@ public class GameService {
                 }
                 if(game.getTotalAway() < 2){
                     homeTeamPlayers.forEach(this::raiseDefensivePlayerForm);
+                    raiseDefensiveLineForm(homeTeamPlayers);
                 }
 
                 if (game.getTotalAway() > 3){
@@ -184,6 +185,7 @@ public class GameService {
                 }
                 if(game.getTotalHome() < 2){
                     awayTeamPlayers.forEach(this::raiseDefensivePlayerForm);
+                    raiseDefensiveLineForm(awayTeamPlayers);
                 }
 
                 if (game.getTotalHome() > 3){
@@ -198,6 +200,7 @@ public class GameService {
                 awayTeam.setPotentialPoints(0);
 
                 if (game.getTotalHome() < 2) {
+                    allPlayers.forEach(this::raiseDefensivePlayerForm);
                     raiseDefensiveLineForm(homeTeamPlayers);
                     raiseDefensiveLineForm(awayTeamPlayers);
                 }
