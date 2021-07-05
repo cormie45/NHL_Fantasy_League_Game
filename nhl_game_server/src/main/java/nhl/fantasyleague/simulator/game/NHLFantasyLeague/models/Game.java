@@ -5,8 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import javax.persistence.*;
 
 @Entity
-@Table (name = "games")
-
+@Table(name = "games")
 public class Game {
 
     @Id
@@ -50,6 +49,12 @@ public class Game {
     @Column(name = "played3rd")
     private boolean played3rd;
 
+    @Column(name = "total_home")
+    private int totalHome;
+
+    @Column(name = "total_away")
+    private int totalAway;
+
     public Game(Team homeTeam, Team awayTeam) {
         this.homeTeam = homeTeam;
         this.awayTeam = awayTeam;
@@ -62,6 +67,8 @@ public class Game {
         this.homeGoals3rd = 0;
         this.awayGoals3rd = 0;
         this.played3rd = false;
+        this.totalHome = 0;
+        this.totalAway = 0;
     }
 
     public Game() {
@@ -162,5 +169,21 @@ public class Game {
 
     public void setPlayed3rd(boolean played3rd) {
         this.played3rd = played3rd;
+    }
+
+    public int getTotalHome() {
+        return totalHome;
+    }
+
+    public void setTotalHome(int totalHome) {
+        this.totalHome = totalHome;
+    }
+
+    public int getTotalAway() {
+        return totalAway;
+    }
+
+    public void setTotalAway(int totalAway) {
+        this.totalAway = totalAway;
     }
 }

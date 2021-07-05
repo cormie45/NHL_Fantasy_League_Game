@@ -63,7 +63,7 @@ public class GameService {
 
     public ResponseEntity<Game> simulateGames(Long id) {
 
-        Game game = gameRepository.getById(id);
+        Game game = gameRepository.findById(id).get();
         Team homeTeam = game.getHomeTeam();
         Team awayTeam = game.getAwayTeam();
 
@@ -91,23 +91,83 @@ public class GameService {
         int awayTeamDef = Math.floorDiv(awayPlayerDef * awayTeam.getTeamForm(), 10);
 
         if (!game.hasPlayed1st()){
-            game.setHomeGoals1st(generateScore(homeTeamAtt, awayTeamDef));
-            game.setAwayGoals1st(generateScore(awayTeamAtt, homeTeamDef));
+            int homeGoals = generateScore(homeTeamAtt, awayTeamDef);
+            int awayGoals = generateScore(awayTeamAtt, homeTeamDef);
+            game.setHomeGoals1st(homeGoals);
+            game.setTotalHome(game.getTotalHome() + homeGoals);
+            homeTeam.setGoalsFor(homeTeam.getGoalsFor() + homeGoals);
+            awayTeam.setGoalsAgainst(awayTeam.getGoalsAgainst() + homeGoals);
+            game.setAwayGoals1st(awayGoals);
+            game.setTotalAway(game.getTotalAway() + awayGoals);
+            awayTeam.setGoalsFor(awayTeam.getGoalsFor() + awayGoals);
+            homeTeam.setGoalsAgainst(homeTeam.getGoalsAgainst() + awayGoals);
+            if (game.getTotalHome() > game.getTotalAway()){
+                homeTeam.setPotentialPoints(homeTeam.getPoints() + 2);
+            }
+            if (game.getTotalHome() < game.getTotalAway()){
+                awayTeam.setPotentialPoints(awayTeam.getPoints() + 2);
+            }
+
+            if (game.getTotalHome() == game.getTotalAway()){
+                homeTeam.setPotentialPoints(homeTeam.getPoints() + 1);
+                awayTeam.setPotentialPoints(awayTeam.getPoints() + 1);
+            }
             game.setPlayed1st(true);
+            gameRepository.save(game);
             return new ResponseEntity(game, HttpStatus.OK);
         }
 
         if (game.hasPlayed1st() && !game.hasPlayed2nd()){
-            game.setHomeGoals2nd(generateScore(homeTeamAtt, awayTeamDef));
-            game.setAwayGoals2nd(generateScore(awayTeamAtt, homeTeamDef));
+            int homeGoals = generateScore(homeTeamAtt, awayTeamDef);
+            int awayGoals = generateScore(awayTeamAtt, homeTeamDef);
+            game.setHomeGoals2nd(homeGoals);
+            game.setTotalHome(game.getTotalHome() + homeGoals);
+            homeTeam.setGoalsFor(homeTeam.getGoalsFor() + homeGoals);
+            awayTeam.setGoalsAgainst(awayTeam.getGoalsAgainst() + homeGoals);
+            game.setAwayGoals2nd(awayGoals);
+            game.setTotalAway(game.getTotalAway() + awayGoals);
+            awayTeam.setGoalsFor(awayTeam.getGoalsFor() + awayGoals);
+            homeTeam.setGoalsAgainst(homeTeam.getGoalsAgainst() + awayGoals);
+            if (game.getTotalHome() > game.getTotalAway()){
+                homeTeam.setPotentialPoints(homeTeam.getPoints() + 2);
+            }
+            if (game.getTotalHome() < game.getTotalAway()){
+                awayTeam.setPotentialPoints(awayTeam.getPoints() + 2);
+            }
+
+            if (game.getTotalHome() == game.getTotalAway()){
+                homeTeam.setPotentialPoints(homeTeam.getPoints() + 1);
+                awayTeam.setPotentialPoints(awayTeam.getPoints() + 1);
+            }
             game.setPlayed2nd(true);
+            gameRepository.save(game);
             return new ResponseEntity(game, HttpStatus.OK);
         }
 
         if (game.hasPlayed1st() && game.hasPlayed2nd() && !game.hasPlayed3rd()){
-            game.setHomeGoals3rd(generateScore(homeTeamAtt, awayTeamDef));
-            game.setAwayGoals3rd(generateScore(awayTeamAtt, homeTeamDef));
+            int homeGoals = generateScore(homeTeamAtt, awayTeamDef);
+            int awayGoals = generateScore(awayTeamAtt, homeTeamDef);
+            game.setHomeGoals3rd(homeGoals);
+            game.setTotalHome(game.getTotalHome() + homeGoals);
+            homeTeam.setGoalsFor(homeTeam.getGoalsFor() + homeGoals);
+            awayTeam.setGoalsAgainst(awayTeam.getGoalsAgainst() + homeGoals);
+            game.setAwayGoals3rd(awayGoals);
+            game.setTotalAway(game.getTotalAway() + awayGoals);
+            awayTeam.setGoalsFor(awayTeam.getGoalsFor() + awayGoals);
+            homeTeam.setGoalsAgainst(homeTeam.getGoalsAgainst() + awayGoals);
+            if (game.getTotalHome() > game.getTotalAway()){
+                homeTeam.setPotentialPoints(homeTeam.getPoints() + 2);
+            }
+            if (game.getTotalHome() < game.getTotalAway()){
+                awayTeam.setPotentialPoints(awayTeam.getPoints() + 2);
+            }
+
+            if (game.getTotalHome() == game.getTotalAway()){
+                homeTeam.setPotentialPoints(homeTeam.getPoints() + 1);
+                awayTeam.setPotentialPoints(awayTeam.getPoints() + 1);
+            }
             game.setPlayed3rd(true);
+            gameRepository.save(game);
             return new ResponseEntity(game, HttpStatus.OK);
         }
         return new ResponseEntity(game, HttpStatus.OK);
@@ -136,72 +196,62 @@ public class GameService {
 
         if (Att > Def){
 
-            potentialScore.add(0);
-            potentialScore.add(0);
-            potentialScore.add(1);
-            potentialScore.add(2);
+            int variance = Att - Def;
+            for (int n=1; n<variance; n++){
 
-//            int variance = Att - Def;
-//            for (int n=1; n<variance; n++){
-//
-//                if (n > 11){
-//                    min = 3;
-//                    max = 6;
-//                    int goal = randGoal.nextInt((max - min) +1) + min;
-//                    potentialScore.add(goal);
-//                }
-//
-//                else if (n > 7){
-//                    min = 2;
-//                    max = 5;
-//                    int goal = randGoal.nextInt((max - min) +1) + min;
-//                    potentialScore.add(goal);
-//                }
-//
-//                else if (n > 3){
-//                    min = 1;
-//                    int goal = randGoal.nextInt((max - min) +1) + min;
-//                    potentialScore.add(goal);
-//                }
-//
-//                else{
-//                    int goal = randGoal.nextInt((max - min) +1) + min;
-//                    potentialScore.add(goal);
-//                }
-//
-//            }
+                if (n > 11){
+                    min = 3;
+                    max = 6;
+                    int goal = randGoal.nextInt((max - min) +1) + min;
+                    potentialScore.add(goal);
+                }
+
+                else if (n > 7){
+                    min = 2;
+                    max = 5;
+                    int goal = randGoal.nextInt((max - min) +1) + min;
+                    potentialScore.add(goal);
+                }
+
+                else if (n > 3){
+                    min = 1;
+                    int goal = randGoal.nextInt((max - min) +1) + min;
+                    potentialScore.add(goal);
+                }
+
+                else{
+                    int goal = randGoal.nextInt((max - min) +1) + min;
+                    potentialScore.add(goal);
+                }
+
+            }
         }
         if(Def > Att){
 
-            potentialScore.add(0);
-            potentialScore.add(0);
-            potentialScore.add(1);
-            potentialScore.add(2);
+            int variance = Def - Att;
+            for (int n=1; n<variance; n++){
+                if (n > 11){
+                    max = 1;
+                    int goal = randGoal.nextInt((max - min) +1) + min;
+                    potentialScore.add(goal);
+                }
 
-//            int variance = Def - Att;
-//            for (int n=1; n<variance; n++){
-//                if (n > 11){
-//                    max = 1;
-//                    int goal = randGoal.nextInt((max - min) +1) + min;
-//                    potentialScore.add(goal);
-//                }
-//
-//                else if (n > 7){
-//                    max = 2;
-//                    int goal = randGoal.nextInt((max - min) +1) + min;
-//                    potentialScore.add(goal);
-//                }
-//
-//                else if (n > 3){
-//                    max = 3;
-//                    int goal = randGoal.nextInt((max - min) +1) + min;
-//                    potentialScore.add(goal);
-//                }
-//                else {
-//                    int goal = randGoal.nextInt((max - min) +1) + min;
-//                    potentialScore.add(goal);
-//                }
-//            }
+                else if (n > 7){
+                    max = 2;
+                    int goal = randGoal.nextInt((max - min) +1) + min;
+                    potentialScore.add(goal);
+                }
+
+                else if (n > 3){
+                    max = 3;
+                    int goal = randGoal.nextInt((max - min) +1) + min;
+                    potentialScore.add(goal);
+                }
+                else {
+                    int goal = randGoal.nextInt((max - min) +1) + min;
+                    potentialScore.add(goal);
+                }
+            }
         }
 
         if (Att == Def){
@@ -212,8 +262,7 @@ public class GameService {
         }
 
         Random randScore = new Random();
-        int score = potentialScore.get(randScore.nextInt(potentialScore.size()));
-        return score;
+        return potentialScore.get(randScore.nextInt(potentialScore.size()));
     }
 
 
