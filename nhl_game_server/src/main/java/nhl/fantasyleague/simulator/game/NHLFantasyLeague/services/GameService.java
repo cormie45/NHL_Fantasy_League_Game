@@ -207,7 +207,6 @@ public class GameService {
                 }
 
                 else if (n > 14){
-                    min = 0;
                     max = 4;
                     int goal = randGoal.nextInt((max - min) +1) + min;
                     potentialScore.add(goal);
@@ -227,7 +226,6 @@ public class GameService {
 
                 else{
                     max = 1;
-                    potentialScore.add(0);
                     int goal = randGoal.nextInt((max - min) +1) + min;
                     potentialScore.add(goal);
                 }
