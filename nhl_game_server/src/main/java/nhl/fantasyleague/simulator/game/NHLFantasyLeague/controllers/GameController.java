@@ -32,8 +32,8 @@ public class GameController {
         return gameService.createGames();
     }
 
-    @GetMapping(value = "/games/simulate")
-    public ResponseEntity<Game> simulateGame(@RequestParam(name = "gameID", required = true)Long id){
+    @GetMapping(value = "/games/simulate/{id}")
+    public ResponseEntity<Game> simulateGame(@PathVariable Long id){
         return gameService.simulateGames(id);
     }
 

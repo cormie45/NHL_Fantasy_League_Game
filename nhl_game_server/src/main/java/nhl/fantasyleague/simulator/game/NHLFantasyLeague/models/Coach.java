@@ -1,5 +1,7 @@
 package nhl.fantasyleague.simulator.game.NHLFantasyLeague.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 
 @Entity
@@ -23,6 +25,7 @@ public class Coach {
     private boolean ai;
 
     @OneToOne
+    @JsonIgnoreProperties({"coach"})
     @JoinColumn(name = "team_id", nullable = false)
     private Team team;
 

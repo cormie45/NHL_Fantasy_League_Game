@@ -72,33 +72,62 @@ public class GameService {
 
         int homePlayerAtt = homeTeamPlayers.stream().filter(
                 player -> player.getPosition().equals("Center") || player.getPosition().equals("Left Wing") || player.getPosition().equals("Right Wing")).mapToInt(
-                        player -> (player.getRating() * 2) * player.getPlayerForm() * player.getLine()).sum();
+                        player -> (player.getRating() * 2) * player.getPlayerForm() * getTimeOnIce(player)).sum();
         int homeTeamAtt = Math.floorDiv(homePlayerAtt * homeTeam.getTeamForm(), 10);
 
         int homePlayerDef = homeTeamPlayers.stream().filter(
                 player -> player.getPosition().equals("Defence") || player.getPosition().equals("Goaltender")).mapToInt(
-                        player -> (player.getRating() * 2) * player.getPlayerForm() * player.getLine()).sum();
+                        player -> (player.getRating() * 2) * player.getPlayerForm() * getTimeOnIce(player)).sum();
         int homeTeamDef = Math.floorDiv(homePlayerDef * homeTeam.getTeamForm(), 10);
 
         int awayPlayerAtt = awayTeamPlayers.stream().filter(
                 player -> player.getPosition().equals("Center") || player.getPosition().equals("Left Wing") || player.getPosition().equals("Right Wing")).mapToInt(
-                        player -> (player.getRating() * 2) * player.getPlayerForm() * player.getLine()).sum();
+                        player -> (player.getRating() * 2) * player.getPlayerForm() * getTimeOnIce(player)).sum();
         int awayTeamAtt = Math.floorDiv(awayPlayerAtt * awayTeam.getTeamForm(), 10);
 
         int awayPlayerDef = awayTeamPlayers.stream().filter(
                 player -> player.getPosition().equals("Defence") || player.getPosition().equals("Goaltender")).mapToInt(
-                        player -> (player.getRating() * 2) * player.getPlayerForm() * player.getLine()).sum();
+                        player -> (player.getRating() * 2) * player.getPlayerForm() * getTimeOnIce(player)).sum();
         int awayTeamDef = Math.floorDiv(awayPlayerDef * awayTeam.getTeamForm(), 10);
 
         if (!game.hasPlayed1st()){
             game.setHomeGoals1st(generateScore(homeTeamAtt, awayTeamDef));
             game.setAwayGoals1st(generateScore(awayTeamAtt, homeTeamDef));
             game.setPlayed1st(true);
+            return new ResponseEntity(game, HttpStatus.OK);
         }
 
+        if (game.hasPlayed1st() && !game.hasPlayed2nd()){
+            game.setHomeGoals2nd(generateScore(homeTeamAtt, awayTeamDef));
+            game.setAwayGoals2nd(generateScore(awayTeamAtt, homeTeamDef));
+            game.setPlayed2nd(true);
+            return new ResponseEntity(game, HttpStatus.OK);
+        }
+
+        if (game.hasPlayed1st() && game.hasPlayed2nd() && !game.hasPlayed3rd()){
+            game.setHomeGoals3rd(generateScore(homeTeamAtt, awayTeamDef));
+            game.setAwayGoals3rd(generateScore(awayTeamAtt, homeTeamDef));
+            game.setPlayed3rd(true);
+            return new ResponseEntity(game, HttpStatus.OK);
+        }
+        return new ResponseEntity(game, HttpStatus.OK);
     }
 
-    private Integer generateScore(int Att, int Def) {
+    private int getTimeOnIce(Player player){
+        int timeOnIce = 0;
+        if (player.getLine() == 1){
+            timeOnIce = 3;
+        }
+        if (player.getLine() == 2){
+            timeOnIce = 2;
+        }
+        if (player.getLine() == 3){
+            timeOnIce = 1;
+        }
+        return timeOnIce;
+    }
+
+    private int generateScore(int Att, int Def) {
 
         ArrayList<Integer> potentialScore = new ArrayList<>();
         Random randGoal = new Random();
@@ -107,57 +136,84 @@ public class GameService {
 
         if (Att > Def){
 
-            int variance = Att - Def;
-            for (int n=1; n<variance; n++){
+            potentialScore.add(0);
+            potentialScore.add(0);
+            potentialScore.add(1);
+            potentialScore.add(2);
 
-                if (n > 3){
-                    min = 1;
-                }
-
-                if (n > 7){
-                    min = 2;
-                    max = 5;
-                }
-
-                if (n > 11){
-                    min = 3;
-                    max = 6;
-                }
-                int goal = randGoal.nextInt((max - min) +1) + min;
-                potentialScore.add(goal);
-            }
+//            int variance = Att - Def;
+//            for (int n=1; n<variance; n++){
+//
+//                if (n > 11){
+//                    min = 3;
+//                    max = 6;
+//                    int goal = randGoal.nextInt((max - min) +1) + min;
+//                    potentialScore.add(goal);
+//                }
+//
+//                else if (n > 7){
+//                    min = 2;
+//                    max = 5;
+//                    int goal = randGoal.nextInt((max - min) +1) + min;
+//                    potentialScore.add(goal);
+//                }
+//
+//                else if (n > 3){
+//                    min = 1;
+//                    int goal = randGoal.nextInt((max - min) +1) + min;
+//                    potentialScore.add(goal);
+//                }
+//
+//                else{
+//                    int goal = randGoal.nextInt((max - min) +1) + min;
+//                    potentialScore.add(goal);
+//                }
+//
+//            }
         }
-        else if(Def > Att){
+        if(Def > Att){
 
-            int variance = Def - Att;
-            for (int n=1; n<variance; n++){
-                if (n > 11){
-                    max = 1;
-                    int goal = randGoal.nextInt((max - min) +1) + min;
-                    potentialScore.add(goal);
-                }
+            potentialScore.add(0);
+            potentialScore.add(0);
+            potentialScore.add(1);
+            potentialScore.add(2);
 
-                else if (n > 7){
-                    max = 2;
-                    int goal = randGoal.nextInt((max - min) +1) + min;
-                    potentialScore.add(goal);
-                }
-
-                else if (n > 3){
-                    max = 3;
-                    int goal = randGoal.nextInt((max - min) +1) + min;
-                    potentialScore.add(goal);
-                }
-            }
+//            int variance = Def - Att;
+//            for (int n=1; n<variance; n++){
+//                if (n > 11){
+//                    max = 1;
+//                    int goal = randGoal.nextInt((max - min) +1) + min;
+//                    potentialScore.add(goal);
+//                }
+//
+//                else if (n > 7){
+//                    max = 2;
+//                    int goal = randGoal.nextInt((max - min) +1) + min;
+//                    potentialScore.add(goal);
+//                }
+//
+//                else if (n > 3){
+//                    max = 3;
+//                    int goal = randGoal.nextInt((max - min) +1) + min;
+//                    potentialScore.add(goal);
+//                }
+//                else {
+//                    int goal = randGoal.nextInt((max - min) +1) + min;
+//                    potentialScore.add(goal);
+//                }
+//            }
         }
-        else{
+
+        if (Att == Def){
             potentialScore.add(0);
             potentialScore.add(0);
             potentialScore.add(1);
             potentialScore.add(2);
         }
+
         Random randScore = new Random();
-        return potentialScore.get(randScore.nextInt(potentialScore.size()));
+        int score = potentialScore.get(randScore.nextInt(potentialScore.size()));
+        return score;
     }
 
 

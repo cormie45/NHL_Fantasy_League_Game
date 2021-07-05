@@ -49,6 +49,7 @@ public class Team {
     @OneToMany(mappedBy = "team")
     private List<Player> players;
 
+    @JsonIgnoreProperties(value = "team")
     @OneToOne(mappedBy = "team", cascade = CascadeType.ALL)
     private Coach coach;
 
