@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -16,7 +17,9 @@ public class TeamService {
     TeamRepository teamRepository;
 
     public ResponseEntity<List<Team>> getAllTeams(){
-        return new ResponseEntity<>(teamRepository.findAll(), HttpStatus.OK);
+        ArrayList<Team> teams = (ArrayList<Team>) teamRepository.findAll();
+        teams.remove(24);
+        return new ResponseEntity<>(teams, HttpStatus.OK);
     }
 
     public ResponseEntity getTeam(Long id){

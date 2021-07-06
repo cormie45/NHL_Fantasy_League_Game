@@ -41,6 +41,7 @@ public class GameService {
 
     public ResponseEntity createGames(){
         ArrayList<Team> teams = (ArrayList<Team>) teamRepository.findAll();
+        teams.remove(24);
         Collections.shuffle(teams, new Random());
         int size = teams.size();
         ArrayList<Game> homeGames = new ArrayList<>();

@@ -78,6 +78,11 @@ public class DataLoader implements ApplicationRunner {
         Team jets = new Team("Winnipeg Jets", 15000000L, "Bell MTS Place", "Winnipeg, MB");
         teamRepository.save(jets);
 
+//        PLAYER TEAM
+
+        Team user = new Team("name", 300000000L, "stadium", "city");
+        teamRepository.save(user);
+
 //        FREE AGENT TEAM
 
         Team free = new Team("Free Agents", 0L, "N/A", "N/A");
@@ -133,6 +138,10 @@ public class DataLoader implements ApplicationRunner {
         Coach pMaurice = new Coach("Paul", "Maurice", "Attacking",true, jets);
         coachRepository.save(pMaurice);
 
+//        PLAYER PROFILE
+
+        Coach player = new Coach("first", "last", "N/A", false, user);
+        coachRepository.save(player);
 
 //        PLAYERS
 
