@@ -1,0 +1,35 @@
+table {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10px;
+    border-collapse: collapse;
+    counter-reset: rowNumber + 1;
+    width: 20%;
+    max-height: 50%;
+}
+
+table tr {
+    counter-increment: rowNumber;
+}
+  
+table td, table th {
+    border: 1px solid #ddd;
+    padding: 6px;
+}
+  
+table tr:nth-child(even){background-color: #f2f2f2;}
+
+table tr td:first-child::before {
+    content: counter(rowNumber);
+    min-width: 1em;
+    margin-right: 0.5em;
+}
+  
+table tr:hover {background-color: #ddd;}
+  
+table th {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    text-align: left;
+    background-color: #04AA6D;
+    color: white;
+}

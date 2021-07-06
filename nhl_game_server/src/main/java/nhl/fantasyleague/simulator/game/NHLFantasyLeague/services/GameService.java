@@ -41,7 +41,7 @@ public class GameService {
 
     public ResponseEntity createGames(){
         ArrayList<Team> teams = (ArrayList<Team>) teamRepository.findAll();
-        teams.remove(24);
+        teams.removeIf(team -> team.getId() == 25);
         Collections.shuffle(teams, new Random());
         int size = teams.size();
         ArrayList<Game> homeGames = new ArrayList<>();
@@ -278,7 +278,7 @@ public class GameService {
 
         ArrayList<Player> possibleGoalscorer = new ArrayList<>();
 
-        for (int g=0; g<goalsScored; g++) {
+        for (int g = 0; g < goalsScored; g++) {
             players.forEach(player -> {
                 if (player.getPosition().equals("Center")){
                     int goalAttempts = 3 + getTimeOnIce(player) + player.getPlayerForm();
@@ -301,7 +301,6 @@ public class GameService {
                     }
                 }
             });
-            System.out.println(possibleGoalscorer.size());
             Random randScorer = new Random();
             Player goalScorer = possibleGoalscorer.get(randScorer.nextInt(possibleGoalscorer.size()));
             Goal goal = new Goal(goalScorer, game, period);
@@ -339,35 +338,40 @@ public class GameService {
         if (Att > Def){
 
             int variance = Att - Def;
-            for (int n=0; n<variance; n++){
+            for (int n = 1; n <= variance; n++){
 
                 if (n > 19){
                     min = 1;
                     max = 5;
+                    potentialScore.add(2);
                     int goal = randGoal.nextInt((max - min) +1) + min;
                     potentialScore.add(goal);
                 }
 
                 else if (n > 14){
                     max = 4;
+                    potentialScore.add(1);
                     int goal = randGoal.nextInt((max - min) +1) + min;
                     potentialScore.add(goal);
                 }
 
                 else if (n > 9){
                     max = 3;
+                    potentialScore.add(1);
                     int goal = randGoal.nextInt((max - min) +1) + min;
                     potentialScore.add(goal);
                 }
 
                 else if (n > 4){
                     max = 2;
+                    potentialScore.add(0);
                     int goal = randGoal.nextInt((max - min) +1) + min;
                     potentialScore.add(goal);
                 }
 
                 else{
                     max = 1;
+                    potentialScore.add(0);
                     int goal = randGoal.nextInt((max - min) +1) + min;
                     potentialScore.add(goal);
                 }
@@ -377,7 +381,7 @@ public class GameService {
         if(Def > Att){
 
             int variance = Def - Att;
-            for (int n=0; n<variance; n++){
+            for (int n = 1; n <= variance; n++){
                 if (n > 14){
                     max = 1;
                     potentialScore.add(0);
@@ -394,10 +398,12 @@ public class GameService {
 
                 else if (n > 4){
                     max = 3;
+                    potentialScore.add(1);
                     int goal = randGoal.nextInt((max - min) +1) + min;
                     potentialScore.add(goal);
                 }
                 else {
+                    potentialScore.add(1);
                     int goal = randGoal.nextInt((max - min) +1) + min;
                     potentialScore.add(goal);
                 }
@@ -486,5 +492,21 @@ public class GameService {
                     raiseDefensivePlayerForm(player);
                 }
             });
+    }
+
+    public ResponseEntity<List<Game>> simulateWeek() {
+        Team team = teamRepository.findById(1L).get();
+        ArrayList<Game> played = new ArrayList<>();
+        int week = team.getGamesPlayed() + 1;
+        int range = 12 * week;
+        for (int i = range - 12; i <= range; i++){
+            if (i==0){
+                i++;
+            }
+            simulateGames((long) i);
+            Game game = gameRepository.findById((long) i).get();
+            played.add(game);
+        }
+        return new ResponseEntity<>(played, HttpStatus.OK);
     }
 }

@@ -37,6 +37,11 @@ public class GameController {
         return gameService.simulateGames(id);
     }
 
+    @GetMapping(value = "/games/simulate/week")
+    public ResponseEntity<List<Game>> simulateWeek(){
+        return gameService.simulateWeek();
+    }
+
 //    @GetMapping(value = "/games/week1")
 //    public ResponseEntity<List<Game>> playWeek1(){
 //        return gameService.playWeek1();

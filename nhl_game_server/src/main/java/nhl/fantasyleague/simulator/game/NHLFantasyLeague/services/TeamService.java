@@ -18,7 +18,7 @@ public class TeamService {
 
     public ResponseEntity<List<Team>> getAllTeams(){
         ArrayList<Team> teams = (ArrayList<Team>) teamRepository.findAll();
-        teams.remove(24);
+        teams.removeIf(team -> team.getId() == 25);
         return new ResponseEntity<>(teams, HttpStatus.OK);
     }
 
