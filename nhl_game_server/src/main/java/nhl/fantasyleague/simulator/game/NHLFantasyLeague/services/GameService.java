@@ -88,15 +88,15 @@ public class GameService {
             int awayGoals = generateScore(awayTeamAtt, homeTeamDef);
             game.setPlayed1st(true);
             game.setHomeGoals1st(homeGoals);
-            if (game.getHomeGoals1st() > 0){
-                generateGoals(game, homeTeamPlayers, game.getHomeGoals1st());
+            if (homeGoals > 0){
+                generateGoals(game, homeTeamPlayers, homeGoals);
             }
             game.setTotalHome(game.getTotalHome() + homeGoals);
             homeTeam.setGoalsFor(homeTeam.getGoalsFor() + homeGoals);
             awayTeam.setGoalsAgainst(awayTeam.getGoalsAgainst() + homeGoals);
             game.setAwayGoals1st(awayGoals);
-            if(game.getHomeGoals1st() > 0){
-                generateGoals(game, awayTeamPlayers, game.getAwayGoals1st());
+            if(awayGoals > 0){
+                generateGoals(game, awayTeamPlayers, awayGoals);
             }
             game.setTotalAway(game.getTotalAway() + awayGoals);
             awayTeam.setGoalsFor(awayTeam.getGoalsFor() + awayGoals);
@@ -121,15 +121,15 @@ public class GameService {
             int awayGoals = generateScore(awayTeamAtt, homeTeamDef);
             game.setPlayed2nd(true);
             game.setHomeGoals2nd(homeGoals);
-            if (game.getHomeGoals2nd() > 0){
-                generateGoals(game, homeTeamPlayers, game.getHomeGoals2nd());
+            if (homeGoals > 0){
+                generateGoals(game, homeTeamPlayers, homeGoals);
             }
             game.setTotalHome(game.getTotalHome() + homeGoals);
             homeTeam.setGoalsFor(homeTeam.getGoalsFor() + homeGoals);
             awayTeam.setGoalsAgainst(awayTeam.getGoalsAgainst() + homeGoals);
             game.setAwayGoals2nd(awayGoals);
-            if (game.getAwayGoals2nd() > 0){
-                generateGoals(game, awayTeamPlayers, game.getAwayGoals2nd());
+            if (awayGoals > 0){
+                generateGoals(game, awayTeamPlayers, awayGoals);
             }
             game.setTotalAway(game.getTotalAway() + awayGoals);
             awayTeam.setGoalsFor(awayTeam.getGoalsFor() + awayGoals);
@@ -154,15 +154,15 @@ public class GameService {
             int awayGoals = generateScore(awayTeamAtt, homeTeamDef);
             game.setPlayed3rd(true);
             game.setHomeGoals3rd(homeGoals);
-            if (game.getHomeGoals3rd() > 0){
-                generateGoals(game, homeTeamPlayers, game.getHomeGoals3rd());
+            if (homeGoals > 0){
+                generateGoals(game, homeTeamPlayers, homeGoals);
             }
             game.setTotalHome(game.getTotalHome() + homeGoals);
             homeTeam.setGoalsFor(homeTeam.getGoalsFor() + homeGoals);
             awayTeam.setGoalsAgainst(awayTeam.getGoalsAgainst() + homeGoals);
             game.setAwayGoals3rd(awayGoals);
-            if (game.getAwayGoals3rd() > 0){
-                generateGoals(game, awayTeamPlayers, game.getAwayGoals3rd());
+            if (awayGoals > 0){
+                generateGoals(game, awayTeamPlayers, awayGoals);
             }
             game.setTotalAway(game.getTotalAway() + awayGoals);
             awayTeam.setGoalsFor(awayTeam.getGoalsFor() + awayGoals);
@@ -277,7 +277,7 @@ public class GameService {
 
         ArrayList<Player> possibleGoalscorer = new ArrayList<>();
 
-        for (int g=1; g<goalsScored; g++) {
+        for (int g=0; g<goalsScored; g++) {
             players.forEach(player -> {
                 if (player.getPosition().equals("Center")){
                     int goalAttempts = 3 + getTimeOnIce(player) + player.getPlayerForm();
@@ -300,16 +300,17 @@ public class GameService {
                     }
                 }
             });
-        }
-        Random randScorer = new Random();
-        Player goalScorer = possibleGoalscorer.get(randScorer.nextInt(possibleGoalscorer.size()));
-        Goal goal = new Goal(goalScorer, game, period);
-        goalRepository.save(goal);
-        goalScorer.setPoints(goalScorer.getPoints() + 1);
-        if (goalScorer.getPosition().equals("Defence")){
-            raiseDefensivePlayerForm(goalScorer);
-        }else{
-            raiseAttackingPlayerForm(goalScorer);
+            System.out.println(possibleGoalscorer.size());
+            Random randScorer = new Random();
+            Player goalScorer = possibleGoalscorer.get(randScorer.nextInt(possibleGoalscorer.size()));
+            Goal goal = new Goal(goalScorer, game, period);
+            goalRepository.save(goal);
+            goalScorer.setPoints(goalScorer.getPoints() + 1);
+            if (goalScorer.getPosition().equals("Defence")){
+                raiseDefensivePlayerForm(goalScorer);
+            }else{
+                raiseAttackingPlayerForm(goalScorer);
+            }
         }
     }
 
@@ -337,7 +338,7 @@ public class GameService {
         if (Att > Def){
 
             int variance = Att - Def;
-            for (int n=1; n<variance; n++){
+            for (int n=0; n<variance; n++){
 
                 if (n > 19){
                     min = 1;
@@ -375,7 +376,7 @@ public class GameService {
         if(Def > Att){
 
             int variance = Def - Att;
-            for (int n=1; n<variance; n++){
+            for (int n=0; n<variance; n++){
                 if (n > 14){
                     max = 1;
                     potentialScore.add(0);
