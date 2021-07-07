@@ -264,6 +264,22 @@ public class GameService {
         return new ResponseEntity(game, HttpStatus.OK);
     }
 
+    public ResponseEntity<List<Game>> simulateWeek() {
+        Team team = teamRepository.findById(1L).get();
+        ArrayList<Game> played = new ArrayList<>();
+        int week = team.getGamesPlayed() + 1;
+        int range = 12 * week;
+        for (int i = range - 12; i <= range; i++){
+            if (i==0){
+                i++;
+            }
+            simulateGames((long) i);
+            Game game = gameRepository.findById((long) i).get();
+            played.add(game);
+        }
+        return new ResponseEntity<>(played, HttpStatus.OK);
+    }
+
     private void generateGoals(Game game, ArrayList<Player> players, int goalsScored) {
         int period = 0;
         if (game.hasPlayed1st() && !game.hasPlayed2nd() && !game.hasPlayed3rd()){
@@ -275,6 +291,8 @@ public class GameService {
         if (game.hasPlayed1st() && game.hasPlayed2nd() && game.hasPlayed3rd()){
             period = 3;
         }
+
+        players.removeIf(player -> player.getPosition().equals("Goaltender"));
 
         ArrayList<Player> possibleGoalscorer = new ArrayList<>();
 
@@ -492,21 +510,5 @@ public class GameService {
                     raiseDefensivePlayerForm(player);
                 }
             });
-    }
-
-    public ResponseEntity<List<Game>> simulateWeek() {
-        Team team = teamRepository.findById(1L).get();
-        ArrayList<Game> played = new ArrayList<>();
-        int week = team.getGamesPlayed() + 1;
-        int range = 12 * week;
-        for (int i = range - 12; i <= range; i++){
-            if (i==0){
-                i++;
-            }
-            simulateGames((long) i);
-            Game game = gameRepository.findById((long) i).get();
-            played.add(game);
-        }
-        return new ResponseEntity<>(played, HttpStatus.OK);
     }
 }

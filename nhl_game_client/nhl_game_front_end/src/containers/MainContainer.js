@@ -8,6 +8,7 @@ const MainContainer = () => {
     const [players, setPlayers] = useState([])
     const [coaches, setCoaches] = useState([])
     const [games, setGames] = useState([])
+    const [isOpen, setIsOpen] = useState(false)
 
     const requestAll = function(){
         const request = new Request();
@@ -27,15 +28,21 @@ const MainContainer = () => {
 
     useEffect(() => {
         requestAll()
+        toggleStartForm()
     }, [])
 
-    if (games.length === 0) {
-        return (<p>Loading...</p>)
+    toggleStartForm = () => {
+        setIsOpen(!isOpen)
     }
 
     return (
         <div>
-            <LeagueTable teams={teams}/>
+
+        <LeagueTable teams={teams}/>
+
+
+
+            <StartForm toggle={isOpen}/>
         </div>
     )
 }
