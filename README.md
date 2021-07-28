@@ -6,13 +6,18 @@ Java | Spring | PostreSQL | JavaScript | React
 A Project to expand upon the NHL Leage Simulator App turning it into a working fantasy league style game. Users will be able to create their own team and select a starting roster from a large databse of available players. Results are simulated using Team Form, Player Form, Player Quality, and Time on Ice, ensuring that the better a team is playing the greater the chance of winning and vice versa.
 
 Working:
+
     Database
+    
     Game Logic
     
 
 In Design:
+
     Front-End UI
+    
     Player Transfer System
+    
     Roster Line Management
     
 
